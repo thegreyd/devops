@@ -1,2 +1,10 @@
 # csc_519_devops
 Repo for CSC 519 - DevOps
+
+MILESTONE1
+
+MILESTONE2
+
+MILESTONE3
+
+MILESTONE4
