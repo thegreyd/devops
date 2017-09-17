@@ -14,4 +14,9 @@ java -jar jenkins-cli.jar -s http://localhost:8080 help --username admin --passw
 
 java -jar jenkins-cli.jar -s http://localhost:8080 -auth admin:<password> get-job checkbox > checkbox.xml
 
+ansible-vault create vars/password.yml
+ansible-vault edit vars/password.yml
+
+ansible-playbook -i inventory checkbox.yml --ask-vault-pass [password : pass]
+
 """
