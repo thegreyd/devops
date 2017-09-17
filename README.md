@@ -3,7 +3,9 @@ Repo for CSC 519 - DevOps
 
 """
 
-Password Location : /Users/Shared/Jenkins/Home/secrets/initialAdminPassword (Mac OS X)
+Password Location : 
+	/Users/Shared/Jenkins/Home/secrets/initialAdminPassword (Mac OS X)
+	/var/lib/jenkins/secrets/initialAdminPassword (Ubuntu)
 
 java -jar jenkins-cli.jar -s http://localhost:8080 help
 
