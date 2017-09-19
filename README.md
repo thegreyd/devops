@@ -2,7 +2,14 @@
 Repo for CSC 519 - DevOps
 
 ## Steps 
-- Run `ansible-playbook -i inventory main.yml`
+- Clone repo
+- Install latest ansible `pip install --user git+git://github.com/ansible/ansible.git@devel`
+- Make an `inventory` file with hosts
+- Run `ansible-playbook main.yml`
+
+## Jobs
+- `checkbox.xml` - normal job which builds on host
+- `checkbox_pipeline.xml` - multibranch pipeline job which builds in a docker container using Jenkinsfile
 
 ## Jenkins info
 + Home: `/var/lib/jenkins`
