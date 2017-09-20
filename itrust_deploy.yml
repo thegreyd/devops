@@ -1,0 +1,56 @@
+---
+- hosts: all
+  tasks:
+
+  - name: create development directory
+    file:
+      path: ./development
+      state: directory
+      mode: 0755
+
+  - name: install jdk and jre
+    apt:
+      name: openjdk-8-jre-headless
+      state: present
+    become: yes
+
+  - name: set JAVA_HOME
+    shell: export JAVA_HOME=/home/vagrantusr/lib/jvm/java-8-openjdk-amd64/bin/java
+
+  - name: check if tomcat is already installed
+    stat:
+      path: /home/vagrant/development/apache-tomcat-9.0.0.M26
+    register: tomcat
+
+  - name: download tomcat 9
+    get_url:
+      url: http://www.us.apache.org/dist/tomcat/tomcat-9/v9.0.0.M26/bin/apache-tomcat-9.0.0.M26.tar.gz
+      dest: /home/vagrant/development
+    when: tomcat.stat.exists == False
+
+  - name: extract tomcat 9
+    unarchive:
+      src: /home/vagrant/development/apache-tomcat-9.0.0.M26.tar.gz
+      dest: /home/vagrant/development/
+      remote_src: yes
+    when: tomcat.stat.exists == False
+
+  - name: install mysql, workbench, jdbc connectors
+    apt:
+      name: "{{ item }}"
+    become: yes
+    become_user: root
+    with_items:
+      - mysql-server
+      - mysql-client
+      - libmysql-java
+      # - mysql-workbench-community
+      # - libmysqlclient18
+
+  - name: install eclipse
+    apt:
+      name: eclipse
+    become: yes
+    become_user: root
+
+...
