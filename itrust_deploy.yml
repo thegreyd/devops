@@ -15,7 +15,7 @@
     become: yes
 
   - name: set JAVA_HOME
-    shell: export JAVA_HOME=/home/vagrantusr/lib/jvm/java-8-openjdk-amd64/bin/java
+    shell: export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 
   - name: check if tomcat is already installed
     stat:
@@ -52,5 +52,41 @@
       name: eclipse
     become: yes
     become_user: root
+
+  - name: change default port on tomcat 9
+    replace:
+      path: /home/vagrant/development/apache-tomcat-9.0.0.M26/conf/server.xml
+      regexp: '<Connector port="8080" protocol="HTTP/1.1"'
+      replace: '<Connector port="9090" protocol="HTTP/1.1"'
+
+  - name: start tomcat server
+    command: sh /home/vagrant/development/apache-tomcat-9.0.0.M26/bin/startup.sh
+    register: start_tomcat
+    failed_when: "'Tomcat started' not in start_tomcat.stdout"
+
+  # - name: add github ssh key
+  #   copy:
+  #     src: /Users/zubin/.ssh/id_rsa.pub
+  #     dest: /home/vagrant/.ssh/id_rsa.github
+  #     owner: vagrant
+  #     group: vagrant
+  #     mode: 0600
+
+  # - name: configure ssh to use ansible key for github.com
+  #   template:
+  #     src: templates/ssh_config
+  #     dest: /home/vagrant/.ssh/config
+  #     owner: vagrant
+  #     group: vagrant
+  #     mode: 0644
+
+  # - name: clone iTrust repo
+  #   git:
+  #     repo: ssh://git@github.ncsu.edu/engr-csc326-staff/iTrust-v23.git
+  #     # key_file: /home/vagrant/.ssh/id_rsa.github
+  #     dest: /home/vagrant/iTrust
+  #     accept_hostkey: yes
+  #     force: yes
+  #     update: yes
 
 ...
