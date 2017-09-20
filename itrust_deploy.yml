@@ -2,6 +2,11 @@
 - hosts: all
   tasks:
 
+  - name: get the admin password from vault
+    include_vars:
+      file: password.yml
+      name: vault
+
   - name: create development directory
     file:
       path: ./development
@@ -64,29 +69,40 @@
     register: start_tomcat
     failed_when: "'Tomcat started' not in start_tomcat.stdout"
 
-  # - name: add github ssh key
-  #   copy:
-  #     src: /Users/zubin/.ssh/id_rsa.pub
-  #     dest: /home/vagrant/.ssh/id_rsa.github
-  #     owner: vagrant
-  #     group: vagrant
-  #     mode: 0600
+  - name: add github ssh key
+    copy:
+      src: /Users/zubin/.ssh/id_rsa.pub
+      dest: /home/vagrant/.ssh/id_rsa.github
+      owner: vagrant
+      group: vagrant
+      mode: 0600
 
-  # - name: configure ssh to use ansible key for github.com
-  #   template:
-  #     src: templates/ssh_config
-  #     dest: /home/vagrant/.ssh/config
-  #     owner: vagrant
-  #     group: vagrant
-  #     mode: 0644
+  - name: configure ssh to use ansible key for github.com
+    template:
+      src: templates/ssh_config
+      dest: /home/vagrant/.ssh/config
+      owner: vagrant
+      group: vagrant
+      mode: 0644
 
-  # - name: clone iTrust repo
-  #   git:
-  #     repo: ssh://git@github.ncsu.edu/engr-csc326-staff/iTrust-v23.git
-  #     # key_file: /home/vagrant/.ssh/id_rsa.github
-  #     dest: /home/vagrant/iTrust
-  #     accept_hostkey: yes
-  #     force: yes
-  #     update: yes
+  - name: Create the SSH public key file
+    copy: 
+      content: "{{ vault['public_key'] }}"
+      dest: /home/vagrant/.ssh/id_rsa.pub
+      mode: 0644
+
+  - name: Create the SSH private key file
+    copy: 
+      content: "{{ vault['private_key'] }}"
+      dest: /home/vagrant/.ssh/id_rsa
+      mode: 0600
+
+  - name: clone iTrust repo
+    git:
+      repo: ssh://git@github.ncsu.edu/engr-csc326-staff/iTrust-v23.git
+      dest: /home/vagrant/iTrust-v23
+      accept_hostkey: yes
+      force: yes
+      update: yes
 
 ...
