@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: localhost
   gather_facts: no
   become : yes
 
@@ -7,7 +7,7 @@
 
   - name: get the credentials from vault
     include_vars:
-      file: password.yml
+      file: /vars/password.yml
       name: vault
 
   - name: Update all packages to the latest version
@@ -94,6 +94,7 @@
     with_items:
       - workflow-aggregator
       - github-branch-source
+      - postbuild-task
     retries: 5
     register: plugin_install
 
