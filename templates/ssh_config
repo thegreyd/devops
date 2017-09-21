@@ -1,0 +1,7 @@
+# templates/ssh_config
+
+{{ ansible_managed | comment }}
+
+Host github.ncsu.edu
+IdentityFile /home/vagrant/.ssh/id_rsa.github
+IdentitiesOnly yes
