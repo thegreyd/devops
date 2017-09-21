@@ -5,6 +5,11 @@
 
   tasks:
 
+  - name: get the credentials from vault
+    include_vars:
+      file: password.yml
+      name: vault
+
   - name: Update all packages to the latest version
     apt:
       update_cache: yes
@@ -84,8 +89,8 @@
       state: present
       timeout: 60
       params:
-        url_username: admin
-        url_password: admin
+        url_username: "{{ vault['jenkins_user'] }}"
+        url_password: "{{ vault['jenkins_pass'] }}"
     with_items:
       - workflow-aggregator
       - github-branch-source
@@ -163,33 +168,92 @@
       url: http://localhost:8080/jnlpJars/jenkins-cli.jar
       dest: /home/vagrant/
 
-  - name: add a build job to jenkins
+  - name: add Github credentials
+    vars:
+      add_credentials_script: |
+        import jenkins.model.*
+        import com.cloudbees.plugins.credentials.*
+        import com.cloudbees.plugins.credentials.domains.*
+        import com.cloudbees.plugins.credentials.impl.*
+        store = Jenkins.instance.getExtensionList('com.cloudbees.plugins.credentials.SystemCredentialsProvider')[0].getStore()
+        usernameAndPassword = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL,"$id", "$description","$username","$password")
+        store.addCredentials(Domain.global(), usernameAndPassword)
+    jenkins_script:
+      args:
+        id: "{{ vault['cred_id'] }}" 
+        description: "{{ vault['cred_desc'] }}"
+        username: "{{ vault['cred_user'] }}"
+        password: "{{ vault['cred_pass'] }}"
+      script: "{{ add_credentials_script }}"
+      user: "{{ vault['jenkins_user'] }}"
+      password: "{{ vault['jenkins_pass'] }}"   
+
+  - name: add itrust job
+    jenkins_job:
+      config: "{{ lookup('file', 'itrust_pipeline.xml') }}"
+      state: present
+      name: itrust_pipeline
+      url: http://localhost:8080/
+      user: "{{ vault['jenkins_user'] }}"
+      password: "{{ vault['jenkins_pass'] }}"
+    register: itrust_job_add
+
+  - name: add checkbox job
     jenkins_job:
       config: "{{ lookup('file', 'checkbox_pipeline.xml') }}"
       state: present
       name: checkbox_pipeline
       url: http://localhost:8080/
-      user: admin
-      password: admin
+      user: "{{ vault['jenkins_user'] }}"
+      password: "{{ vault['jenkins_pass'] }}"
+    register: checkbox_job_add
 
-  - name: trigger build
+  - name: trigger checkbox build
     vars: 
       start_build_script: |
         import hudson.model.*
-        def job = hudson.model.Hudson.instance.getJob("checkbox_pipeline")
+        def job = hudson.model.Hudson.instance.getJob("$jobname")
         hudson.model.Hudson.instance.queue.schedule(job, 0)
     jenkins_script:
+      args: 
+        jobname: checkbox_pipeline
       script: "{{ start_build_script }}"
-      user: admin
-      password: admin
+      user: "{{ vault['jenkins_user'] }}"
+      password: "{{ vault['jenkins_pass'] }}"
+    when: checkbox_job_add|changed
 
-  - name: see build result 
-    command: java -jar jenkins-cli.jar -s http://localhost:8080/ -auth admin:admin console checkbox_pipeline/master
+  - name: trigger itrust build
+    vars: 
+      start_build_script: |
+        import hudson.model.*
+        def job = hudson.model.Hudson.instance.getJob("$jobname")
+        hudson.model.Hudson.instance.queue.schedule(job, 0)
+    jenkins_script:
+      args: 
+        jobname: itrust_pipeline
+      script: "{{ start_build_script }}"
+      user: "{{ vault['jenkins_user'] }}"
+      password: "{{ vault['jenkins_pass'] }}"
+    when: itrust_job_add|changed  
+
+  - name: see itrust build result 
+    command: java -jar jenkins-cli.jar -s http://localhost:8080/ -auth {{ vault['jenkins_user'] }}:{{ vault['jenkins_pass'] }} console itrust_pipeline/master
     register: build_result 
-    until: (build_result.stdout.find("SUCCESS") != -1)
+    until: "(build_result.stdout.find('Finished: FAILURE') != -1) or (build_result.stdout.find('Finished: SUCCESS') != -1)"
     retries: 5
     delay: 20
     ignore_errors: yes
   
+  - debug:
+      var: build_result.stdout_lines
+
+  - name: see checkbox build result 
+    command: "java -jar jenkins-cli.jar -s http://localhost:8080/ -auth {{ vault['jenkins_user'] }}:{{ vault['jenkins_pass'] }} console checkbox_pipeline/master"
+    register: build_result 
+    until: "(build_result.stdout.find('Finished: FAILURE') != -1) or (build_result.stdout.find('Finished: SUCCESS') != -1)"
+    retries: 5
+    delay: 20
+    ignore_errors: yes
+
   - debug:
       var: build_result.stdout_lines
