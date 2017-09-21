@@ -94,6 +94,7 @@
     with_items:
       - workflow-aggregator
       - github-branch-source
+      - postbuild-task
     retries: 5
     register: plugin_install
 
