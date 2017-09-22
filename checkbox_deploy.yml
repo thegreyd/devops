@@ -30,7 +30,7 @@
       - nginx
       - mongodb
       - nodejs
-      - python-pip
+      - python3-pip
 
   - name: install pymongo
     pip:
@@ -44,36 +44,49 @@
       password: 12345
       roles: userAdminAnyDatabase
       state: present
-    when: first_run|changed
+    #when: first_run|changed
   
   - name: Restart mongo
     service:
       name: mongodb
       state: restarted
-    when: first_run|changed
+    #when: first_run|changed
+
+  - name: clone checkbox repo
+    git:
+      repo: https://github.com/thegreyd/checkbox.io
+      dest: /home/ubuntu/checkbox
+      force: yes
+      update: yes
 
   - name: configure nginx defaults
     copy:
-      src: /var/lib/jenkins/workspace/checkbox/local-conf/default
+      src: /home/ubuntu/checkbox/local-conf/default
       dest: /etc/nginx/sites-available/default
       force: yes
       remote_src: True
-    when: first_run|changed 
+    #when: first_run|changed 
 
   - name: configure nginx conf
     copy:
-      src: /var/lib/jenkins/workspace/checkbox/local-conf/nginx.conf
+      src: /home/ubuntu/checkbox/local-conf/nginx.conf
       dest: /etc/nginx/nginx.conf
       force: yes
       remote_src: True
-    when: first_run|changed   
+    #when: first_run|changed   
 
   - name: Restart nginx
     service:
       name: nginx
       state: restarted
-    when: first_run|changed
+    #when: first_run|changed
 
+  - name: npm install
+    npm:
+      path: /home/ubuntu/checkbox/server-side/site/
+      state: present
+  
+  # MONGO_PORT=3002 MONGO_IP=localhost MONGO_USER=jenkins MONGO_PASSWORD=12345 node server.js
   - name: start node server
     environment: 
       MONGO_PORT: 3002 
@@ -84,4 +97,4 @@
     async: 2592000
     poll: 0
     args:
-      chdir: /var/lib/jenkins/workspace/checkbox/server-side/site/
+      chdir: /home/ubuntu/checkbox/server-side/site/
