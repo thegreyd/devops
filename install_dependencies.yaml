@@ -1,0 +1,43 @@
+- name: Add Jenkins key
+  apt_key:
+    url: "https://pkg.jenkins.io/debian/jenkins-ci.org.key"
+    state: present
+
+- name: Add Jenkins repo
+  apt_repository:
+    repo: "deb http://pkg.jenkins.io/debian binary/"
+    state: present
+    update_cache: yes
+
+- name: Add Ansible repo
+  apt_repository:
+    repo: "ppa:ansible/ansible"
+    state: present
+    update_cache: yes  
+
+- name: Install apt dependencies
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - ansible
+    - default-jre
+    - python-pip
+    - maven
+    - openjdk-8-jdk
+    - npm
+  register: jenkins_install
+
+- name: Install jenkins
+  apt:
+    name: jenkins
+    state: present
+
+- name: Install pip dependencies
+  pip:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python-jenkins
+    - lxml
+    - boto  

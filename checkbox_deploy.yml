@@ -1,64 +1,29 @@
 ---
 - hosts: localhost
   gather_facts: no
+
+  vars:
+    hostname: checkbox
+
+  tasks:
+
+  - name: Get credentials from vault
+    include_vars:
+      file: /var/lib/jenkins/password.yml
+      name: vault
+
+  - import_tasks: create_ec2.yaml
+
+- hosts: checkbox
+  gather_facts: no
   become: yes
 
   tasks:
 
   - name: Get credentials from vault
     include_vars:
-      file: password.yml
+      file: /var/lib/jenkins/password.yml
       name: vault
-
-  - name: Create a new EC2 host
-    ec2:
-      aws_access_key: "{{ vault['aws_access_key'] }}"
-      aws_secret_key: "{{ vault['aws_secret_key'] }}"
-      key_name: "{{ vault['aws_key_name'] }}"
-      instance_type: t2.micro
-      image: ami-6e1a0117
-      wait: yes
-      group: webservers
-      region: us-west-2
-      vpc_subnet_id: subnet-162e6571
-      count: 1
-      assign_public_ip: yes
-    register: ec2
-
-  - debug:
-      var: ec2.instances.public_ip
-
-  - name: Create pem file
-    file: 
-      path: "{{ vault['aws_key_name']}}.pem"
-      state: touch
-
-  - name: Add .pem contents
-    lineinfile:
-      path:  "{{ vault['aws_key_name']}}.pem"
-      line: "{{ vault['aws_key_name']}}"
-
-  - name: add ec2 host
-    add_host:
-      name: "{{ ec2.instances.public_ip }}"
-      groups: webservers
-      ansible_ssh_user: ubuntu
-      ansible_ssh_private_key_file: "{{ vault['aws_key_name'] }}.pem"
-      ansible_python_interpreter: /usr/bin/python3
-
-  - name: Wait for ec2 instance to bootup
-    wait_for: 
-      host: "{{ ec2.instances.public_ip }}" 
-      port: 22 
-      delay: 60 
-      timeout: 320 
-      state: started
-
-- hosts: webservers
-  gather_facts: no
-  become: yes
-
-  tasks:
 
   - name: Update all packages
     apt:

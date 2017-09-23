@@ -1,267 +1,49 @@
 ---
 - hosts: localhost
   gather_facts: no
-  become : yes
+
+  vars:
+    hostname: jenkins
 
   tasks:
 
-  - name: get the credentials from vault
+  - name: Get credentials from vault
     include_vars:
-      file: /vars/password.yml
+      file: /var/lib/jenkins/password.yml
       name: vault
 
-  - name: Update all packages to the latest version
+  - import_tasks: create_ec2.yaml   
+
+- hosts: jenkins
+  gather_facts: no
+  become: yes
+  
+  tasks:
+
+  - name: Get credentials
+    include_vars:
+      file: password.yml
+      name: vault
+
+  - name: Update packages
     apt:
       update_cache: yes
       upgrade: dist
 
-  - name: Install java
-    apt:
-      name: default-jre
-      state: present
+  - import_tasks: install_dependencies.yaml
+  
+  - import_tasks: configure_jenkins.yaml
 
-  - name: Add source key for Jenkins
-    apt_key:
-      url: "https://pkg.jenkins.io/debian/jenkins-ci.org.key"
-      state: present
-
-  - name: Add source repo for Jenkins
-    apt_repository:
-      repo: "deb http://pkg.jenkins.io/debian binary/"
-      state: present
-      update_cache: yes
-
-  - name: Install Jenkins
-    apt:
-      name: jenkins
-      state: present
-    register: jenkins_install
-
-  - name: disable startup screen
-    lineinfile:
-      path: /etc/default/jenkins
-      line: 'JAVA_ARGS="-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"'
-      regexp: '^JAVA_ARGS='
-
-  # should execute only at jenkins first run
-  - name: create custom init scripts directory
-    file:
-      path: /var/lib/jenkins/init.groovy.d
-      state: directory
-      owner: jenkins
-      group: jenkins
-      mode: 0775
-    when: jenkins_install|changed
-
-  - name: configure default users
-    template:
-      src: basic-security.groovy
-      dest: /var/lib/jenkins/init.groovy.d/basic-security.groovy
-      owner: jenkins
-      group: jenkins
-      mode: 0775
-    when: jenkins_install|changed
-
-  - name: Restart jenkins
-    service:
-      name: jenkins
-      state: restarted
-    when: jenkins_install|changed
-
-  - name: Wait for Jenkins to start up before proceeding.
+  - name: Wait for Jenkins
     shell: "curl -D - --silent --max-time 5 http://localhost:8080/cli/"
     register: result
     until: (result.stdout.find("403 Forbidden") != -1) or (result.stdout.find("200 OK") != -1) and (result.stdout.find("Please wait while") == -1)
     retries: 5
     delay: 5
     changed_when: false
-    when: jenkins_install|changed
-
-  - name: Remove Jenkins security init scripts after first startup.
-    file:
-      path: /var/lib/jenkins/init.groovy.d/basic-security.groovy
-      state: absent
-    when: jenkins_install|changed
-
-  - name: Install plugins
-    jenkins_plugin:
-      name: "{{ item }}"
-      state: present
-      timeout: 60
-      params:
-        url_username: "{{ vault['jenkins_user'] }}"
-        url_password: "{{ vault['jenkins_pass'] }}"
-    with_items:
-      - workflow-aggregator
-      - github-branch-source
-      - postbuild-task
-    retries: 5
-    register: plugin_install
-
-  - name: Restart jenkins
-    service:
-      name: jenkins
-      state: restarted
-    when: plugin_install|changed
-
-  - name: Wait for Jenkins to start up before proceeding.
-    shell: "curl -D - --silent --max-time 5 http://localhost:8080/cli/"
-    register: result
-    until: (result.stdout.find("403 Forbidden") != -1) or (result.stdout.find("200 OK") != -1) and (result.stdout.find("Please wait while") == -1)
-    retries: 5
-    delay: 5
-    changed_when: false
-    when: plugin_install|changed
-
-  - name: install python-pip
-    apt: 
-      name: python-pip
-      state: present
-
-  - name: pip install lxml, python-jenkins
-    pip:
-      name: "{{ item }}"
-      state: present
-    with_items:
-      - python-jenkins
-      - lxml
-
-  - name: download jenkins-cli
-    get_url:
-      url: http://localhost:8080/jnlpJars/jenkins-cli.jar
-      dest: /home/vagrant/
-
-  - name: add checkbox job
-    jenkins_job:
-      config: "{{ lookup('file', 'checkbox.xml') }}"
-      state: present
-      name: checkbox
-      url: http://localhost:8080/
-      user: "{{ vault['jenkins_user'] }}"
-      password: "{{ vault['jenkins_pass'] }}"
-    register: checkbox_job_add
-
-  - name: trigger checkbox build
-    command: java -jar jenkins-cli.jar -s http://localhost:8080/ -auth admin:admin build checkbox
-
-  - name: see checkbox build result 
-    command: "java -jar jenkins-cli.jar -s http://localhost:8080/ -auth {{ vault['jenkins_user'] }}:{{ vault['jenkins_pass'] }} console checkbox"
-    register: build_result 
-    until: "(build_result.stdout.find('Finished: FAILURE') != -1) or (build_result.stdout.find('Finished: SUCCESS') != -1)"
-    retries: 5
-    delay: 20
-    ignore_errors: yes
-
-  - debug:
-      var: build_result.stdout_lines
-
   
+  - import_tasks: copy_files.yaml
 
-#   - name: Add source key for docker
-#     apt_key:
-#       url: "https://download.docker.com/linux/ubuntu/gpg"
-#       state: present
-
-#   - name: Add source repo for docker
-#     apt_repository:
-#       repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable"
-#       state: present
-#       update_cache: yes
-
-#   - name: Install docker
-#     apt:
-#       name: docker-ce
-#       state: present
-
-#   - name: Add jenkins to docker group
-#     user:
-#       name: jenkins
-#       append: yes
-#       groups: docker
-#     register: docker_user_add
-
-#   - name: Restart jenkins
-#     service:
-#       name: jenkins
-#       state: restarted
-#     when: docker_user_add|changed
-
-#   - name: Wait for Jenkins to start up before proceeding.
-#     shell: "curl -D - --silent --max-time 5 http://localhost:8080/cli/"
-#     register: result
-#     until: (result.stdout.find("403 Forbidden") != -1) or (result.stdout.find("200 OK") != -1) and (result.stdout.find("Please wait while") == -1)
-#     retries: 5
-#     delay: 5
-#     changed_when: false
-#     when: docker_user_add|changed
-
-
-
-#   - name: add Github credentials
-#     vars:
-#       add_credentials_script: |
-#         import jenkins.model.*
-#         import com.cloudbees.plugins.credentials.*
-#         import com.cloudbees.plugins.credentials.domains.*
-#         import com.cloudbees.plugins.credentials.impl.*
-#         store = Jenkins.instance.getExtensionList('com.cloudbees.plugins.credentials.SystemCredentialsProvider')[0].getStore()
-#         usernameAndPassword = new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL,"$id", "$description","$username","$password")
-#         store.addCredentials(Domain.global(), usernameAndPassword)
-#     jenkins_script:
-#       args:
-#         id: "{{ vault['cred_id'] }}" 
-#         description: "{{ vault['cred_desc'] }}"
-#         username: "{{ vault['cred_user'] }}"
-#         password: "{{ vault['cred_pass'] }}"
-#       script: "{{ add_credentials_script }}"
-#       user: "{{ vault['jenkins_user'] }}"
-#       password: "{{ vault['jenkins_pass'] }}"   
-
-#   - name: add itrust job
-#     jenkins_job:
-#       config: "{{ lookup('file', 'itrust_pipeline.xml') }}"
-#       state: present
-#       name: itrust_pipeline
-#       url: http://localhost:8080/
-#       user: "{{ vault['jenkins_user'] }}"
-#       password: "{{ vault['jenkins_pass'] }}"
-#     register: itrust_job_add
-
-#   - name: trigger checkbox build
-#     vars: 
-#       start_build_script: |
-#         import hudson.model.*
-#         def job = hudson.model.Hudson.instance.getJob("$jobname")
-#         hudson.model.Hudson.instance.queue.schedule(job, 0)
-#     jenkins_script:
-#       args: 
-#         jobname: checkbox_pipeline
-#       script: "{{ start_build_script }}"
-#       user: "{{ vault['jenkins_user'] }}"
-#       password: "{{ vault['jenkins_pass'] }}"
-#     when: checkbox_job_add|changed
-
-#   - name: trigger itrust build
-#     vars: 
-#       start_build_script: |
-#         import hudson.model.*
-#         def job = hudson.model.Hudson.instance.getJob("$jobname")
-#         hudson.model.Hudson.instance.queue.schedule(job, 0)
-#     jenkins_script:
-#       args: 
-#         jobname: itrust_pipeline
-#       script: "{{ start_build_script }}"
-#       user: "{{ vault['jenkins_user'] }}"
-#       password: "{{ vault['jenkins_pass'] }}"
-#     when: itrust_job_add|changed  
-
-#   - name: see itrust build result 
-#     command: java -jar jenkins-cli.jar -s http://localhost:8080/ -auth {{ vault['jenkins_user'] }}:{{ vault['jenkins_pass'] }} console itrust_pipeline/master
-#     register: build_result 
-#     until: "(build_result.stdout.find('Finished: FAILURE') != -1) or (build_result.stdout.find('Finished: SUCCESS') != -1)"
-#     retries: 5
-#     delay: 20
-#     ignore_errors: yes
+  - import_tasks: checkbox_job.yaml
   
-#   - debug:
-#       var: build_result.stdout_lines
+  - import_tasks: itrust_job.yaml

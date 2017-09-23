@@ -1,21 +1,48 @@
 ---
-- hosts: all
+- hosts: localhost
+  gather_facts: no
+
+  vars:
+    hostname: itrust
+
+  tasks:
+
+  - name: Get credentials from vault
+    include_vars:
+      file: /var/lib/jenkins/password.yml
+      name: vault
+
+  - import_tasks: create_ec2.yaml    
+
+- hosts: itrust
+  gather_facts: no
+
+  vars:
+    home: /home/ubuntu
+
   tasks:
 
   - name: get the admin password from vault
     include_vars:
-      file: password.yml
+      file: /var/lib/jenkins/password.yml
       name: vault
 
   - name: create development directory
     file:
-      path: ./development
+      path: "{{ home }}/development"
       state: directory
       mode: 0755
 
+  - name: Update all packages
+    apt:
+      update_cache: yes
+      upgrade: dist
+    become: yes
+
   - name: install jdk and jre
     apt:
-      name: openjdk-8-jre-headless
+      # name: openjdk-8-jre-headless
+      name: openjdk-8-jdk
       state: present
     become: yes
 
@@ -24,19 +51,19 @@
 
   - name: check if tomcat is already installed
     stat:
-      path: /home/vagrant/development/apache-tomcat-9.0.0.M26
+      path: "{{ home }}/development/apache-tomcat-9.0.0.M26"
     register: tomcat
 
   - name: download tomcat 9
     get_url:
       url: http://www.us.apache.org/dist/tomcat/tomcat-9/v9.0.0.M26/bin/apache-tomcat-9.0.0.M26.tar.gz
-      dest: /home/vagrant/development
+      dest: "{{ home }}/development"
     when: tomcat.stat.exists == False
 
   - name: extract tomcat 9
     unarchive:
-      src: /home/vagrant/development/apache-tomcat-9.0.0.M26.tar.gz
-      dest: /home/vagrant/development/
+      src: "{{ home }}/development/apache-tomcat-9.0.0.M26.tar.gz"
+      dest: "{{ home }}/development/"
       remote_src: yes
     when: tomcat.stat.exists == False
 
@@ -59,31 +86,31 @@
 
   - name: change default port on tomcat 9
     replace:
-      path: /home/vagrant/development/apache-tomcat-9.0.0.M26/conf/server.xml
+      path: "{{ home }}/development/apache-tomcat-9.0.0.M26/conf/server.xml"
       regexp: '<Connector port="8080" protocol="HTTP/1.1"'
       replace: '<Connector port="9090" protocol="HTTP/1.1"'
 
   - name: start tomcat server
-    command: sh /home/vagrant/development/apache-tomcat-9.0.0.M26/bin/startup.sh
+    command: sh "{{ home }}/development/apache-tomcat-9.0.0.M26/bin/startup.sh"
     register: start_tomcat
     failed_when: "'Tomcat started' not in start_tomcat.stdout"
 
   - name: create the SSH public key file
     copy: 
       content: "{{ vault['public_key'] }}"
-      dest: /home/vagrant/.ssh/id_rsa.pub
+      dest: "{{ home }}/.ssh/id_rsa.pub"
       mode: 0644
 
   - name: create the SSH private key file
     copy: 
       content: "{{ vault['private_key'] }}"
-      dest: /home/vagrant/.ssh/id_rsa
+      dest: "{{ home }}/.ssh/id_rsa"
       mode: 0600
 
   - name: clone iTrust repo
     git:
       repo: ssh://git@github.ncsu.edu/zsthampi/iTrust-v23
-      dest: /home/vagrant/development/iTrust-v23
+      dest: "{{ home }}/development/iTrust-v23"
       accept_hostkey: yes
       force: yes
       update: yes
@@ -120,24 +147,24 @@
   - name: compile the iTrust project
     shell: mvn compile
     args:
-      chdir: /home/vagrant/development/iTrust-v23/iTrust/
+      chdir: "{{ home }}/development/iTrust-v23/iTrust/"
     register: mvn_compile
     failed_when: "'BUILD SUCCESS' not in mvn_compile.stdout"
 
   - name: package the iTrust project
     shell: mvn package
     args:
-      chdir: /home/vagrant/development/iTrust-v23/iTrust/
+      chdir: "{{ home }}/development/iTrust-v23/iTrust/"
 
   - name: check if WAR file is created for iTrust
     stat:
-      path: /home/vagrant/development/iTrust-v23/iTrust/target/iTrust-23.0.0.war
+      path: "{{ home }}/development/iTrust-v23/iTrust/target/iTrust-23.0.0.war"
     register: war
 
   - name: copy iTrust WAR file to tomcat webapps folder
     copy:
-      src: /home/vagrant/development/iTrust-v23/iTrust/target/iTrust-23.0.0.war
-      dest: /home/vagrant/development/apache-tomcat-9.0.0.M26/webapps/
+      src: "{{ home }}/development/iTrust-v23/iTrust/target/iTrust-23.0.0.war"
+      dest: "{{ home }}/development/apache-tomcat-9.0.0.M26/webapps/"
       remote_src: yes
     failed_when: war.stat.exists == False
     when: war.stat.exists == True
@@ -145,14 +172,14 @@
   - name: stop apache server
     command: nohup ./shutdown.sh
     args:
-      chdir: /home/vagrant/development/apache-tomcat-9.0.0.M26/bin/
+      chdir: "{{ home }}/development/apache-tomcat-9.0.0.M26/bin/"
     ignore_errors: yes
     register: stop_apache
 
   - name: start apache server
     command: nohup ./startup.sh
     args:
-      chdir: /home/vagrant/development/apache-tomcat-9.0.0.M26/bin/
+      chdir: "{{ home }}/development/apache-tomcat-9.0.0.M26/bin/"
     register: start_apache
     failed_when: "'Tomcat started' not in start_apache.stdout"
 
