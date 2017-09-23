@@ -1,6 +1,16 @@
 # csc_519_devops
 Repo for CSC 519 - DevOps
 
+
+## Team Members - Unity IDs
+
+1. Zubin Thampi (zsthampi) - iTrust deploy playbook
+2. Shishir Nagendra (sbnagend) - CheckBox deploy playbook 
+3. Siddharth Sharma (ssharm24) - Build jobs for checkbox and iTrust
+4. Kshitija Murudi (kmurudi) - Jenkins install and EC2 creation playbook
+
+Integration of different parts -> Done by all team members together in multiple meetings. 
+
 ## MILESTONE1 REPORT
 
 ```
