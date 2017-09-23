@@ -1,11 +1,66 @@
 ---
-- hosts: all
+- hosts: localhost
   gather_facts: no
-  become : yes
+  become: yes
 
   tasks:
 
-  - name: Update all packages to the latest version
+  - name: Get credentials from vault
+    include_vars:
+      file: password.yml
+      name: vault
+
+  - name: Create a new EC2 host
+    ec2:
+      aws_access_key: "{{ vault['aws_access_key'] }}"
+      aws_secret_key: "{{ vault['aws_secret_key'] }}"
+      key_name: "{{ vault['aws_key_name'] }}"
+      instance_type: t2.micro
+      image: ami-6e1a0117
+      wait: yes
+      group: webservers
+      region: us-west-2
+      vpc_subnet_id: subnet-162e6571
+      count: 1
+      assign_public_ip: yes
+    register: ec2
+
+  - debug:
+      var: ec2.instances.public_ip
+
+  - name: Create pem file
+    file: 
+      path: "{{ vault['aws_key_name']}}.pem"
+      state: touch
+
+  - name: Add .pem contents
+    lineinfile:
+      path:  "{{ vault['aws_key_name']}}.pem"
+      line: "{{ vault['aws_key_name']}}"
+
+  - name: add ec2 host
+    add_host:
+      name: "{{ ec2.instances.public_ip }}"
+      groups: webservers
+      ansible_ssh_user: ubuntu
+      ansible_ssh_private_key_file: "{{ vault['aws_key_name'] }}.pem"
+      ansible_python_interpreter: /usr/bin/python3
+
+  - name: Wait for ec2 instance to bootup
+    wait_for: 
+      host: "{{ ec2.instances.public_ip }}" 
+      port: 22 
+      delay: 60 
+      timeout: 320 
+      state: started
+
+- hosts: webservers
+  gather_facts: no
+  become: yes
+
+  tasks:
+
+  - name: Update all packages
     apt:
       update_cache: yes
       upgrade: dist
@@ -22,7 +77,7 @@
       state: present
       update_cache: yes    
 
-  - name: install packages
+  - name: Install packages
     apt:
       name: "{{ item }}"
       state: present
@@ -40,8 +95,8 @@
   - name: add mongo user
     mongodb_user:
       database: admin
-      name: jenkins
-      password: 12345
+      name: "{{ vault['mongo_user'] }}"
+      password: "{{ vault['mongo_pass'] }}"
       roles: userAdminAnyDatabase
       state: present
     #when: first_run|changed
@@ -86,13 +141,12 @@
       path: /home/ubuntu/checkbox/server-side/site/
       state: present
   
-  # MONGO_PORT=3002 MONGO_IP=localhost MONGO_USER=jenkins MONGO_PASSWORD=12345 node server.js
   - name: start node server
     environment: 
-      MONGO_PORT: 3002 
-      MONGO_IP: localhost 
-      MONGO_USER: jenkins 
-      MONGO_PASSWORD: 12345
+      MONGO_PORT: 3002
+      MONGO_IP: localhost
+      MONGO_USER: "{{ vault['mongo_user'] }}"
+      MONGO_PASSWORD: "{{ vault['mongo_pass'] }}"
     shell: node server.js
     async: 2592000
     poll: 0
