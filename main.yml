@@ -2,15 +2,25 @@
 - hosts: localhost
   gather_facts: no
 
-  vars:
-    hostname: jenkins
-
   tasks:
 
   - name: Get credentials from vault
     include_vars:
-      file: /var/lib/jenkins/password.yml
+      file: password.yml
       name: vault
+
+  - name: set variables
+    set_fact:
+      hostname: jenkins
+      key_file_path: "{{ playbook_dir }}/{{ vault['aws_key_name']}}.pem" 
+      py_path: /usr/bin/python 
+
+  - name: Create pem file
+    copy:
+      content: "{{ vault['aws_key']}}"
+      dest: "{{ key_file_path }}"
+      force: yes
+      mode: 0400
 
   - import_tasks: create_ec2.yaml   
 
@@ -18,6 +28,11 @@
   gather_facts: no
   become: yes
   
+  pre_tasks:
+  
+  - name: 'Install python2'
+    raw: sudo apt -y update && sudo apt -y install python-simplejson
+
   tasks:
 
   - name: Get credentials

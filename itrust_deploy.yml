@@ -2,15 +2,18 @@
 - hosts: localhost
   gather_facts: no
 
-  vars:
-    hostname: itrust
-
   tasks:
 
   - name: Get credentials from vault
     include_vars:
       file: /var/lib/jenkins/password.yml
       name: vault
+
+  - name: set variables
+    set_fact:
+      hostname: itrust
+      key_file_path: "/var/lib/jenkins/{{ vault['aws_key_name']}}.pem"
+      py_path: /usr/bin/python3
 
   - import_tasks: create_ec2.yaml    
 
