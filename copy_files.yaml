@@ -18,8 +18,14 @@
     src: "{{ playbook_dir }}/itrust_deploy.yml"
     dest: /var/lib/jenkins/itrust_deploy.yml
 
+- name: Copy create_ec2 taskfile
+  copy:
+    src: "{{ playbook_dir }}/create_ec2.yaml"
+    dest: /var/lib/jenkins/create_ec2.yaml
+
 - name: Create pem file
   copy:
     content: "{{ vault['aws_key']}}"
     dest: "/var/lib/jenkins/{{ vault['aws_key_name']}}.pem"
-    force: no
+    force: yes
+    mode: 0400
