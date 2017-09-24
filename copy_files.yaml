@@ -23,9 +23,15 @@
     src: "{{ playbook_dir }}/create_ec2.yaml"
     dest: /var/lib/jenkins/create_ec2.yaml
 
+- name: Copy ansible config
+  copy:
+    src: "{{ playbook_dir }}/ansible.cfg"
+    dest: /var/lib/jenkins/ansible.cfg
+
 - name: Create pem file
   copy:
     content: "{{ vault['aws_key']}}"
     dest: "/var/lib/jenkins/{{ vault['aws_key_name']}}.pem"
     force: yes
     mode: 0400
+  become_user: jenkins
