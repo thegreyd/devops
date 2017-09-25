@@ -9,6 +9,8 @@ Repo for CSC 519 - DevOps - [Milestone CM+BUILD](https://github.com/CSC-DevOps/C
 
 Integration of different parts. Done by all team members together in multiple meetings.
 
+## [Youtube Screencast](https://youtu.be/AKYWtaKfhto)
+
 ## MILESTONE1 REPORT
 
 The project was easy to split up, since each part could be developed individually. We took ownership of one task each, and finally integrated everything together. The report below explains our experiences at each step, and at Integration
