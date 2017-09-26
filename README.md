@@ -35,9 +35,9 @@ The project was easy to split up, since each part could be developed individuall
 - Finally, we found it was easier to create a WAR file (through maven package command), and deploy that on Apache Tomcat
 - Additionally, MYSQL required some more installation steps (like update user credentials for root user, and disable case-sensitivity.) It was easy to automate these on ansible, once we found the way to do them through command line on an ubuntu server. 
 
-## Integration
-
-To avoid exposing any sort of credentials on the Repo, we stored all the credentials that we use in an ansible-vault file. (vars/password.yml). We then stored the password for the ansible vault in the home directory of the host machine, and executed stuff from there. We found this to be pretty secure, since only we have access to the machines. 
+### Integration
+- To avoid exposing any sort of credentials on the Repo, we stored all the credentials that we use in an ansible-vault file. (vars/password.yml). We then stored the password for the ansible vault in the home directory of the host machine, and executed stuff from there. We found this to be pretty secure, since only we have access to the machines. 
+- We felt it was easier to work on AWS instances (instead of vagrant), since the instances could be brought up using Ansible modules, and a single key file could be used to login to all of them. Vagrant was more complicated, as we have to setup separate SSH keys for each instance. 
 
 ## Instructions
 - Clone repo
