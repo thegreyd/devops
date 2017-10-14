@@ -11,16 +11,16 @@ var fuzzer = {
     mutate: {
         string: function(val) {
             // MUTATE IMPLEMENTATION HERE
-            var array = val.split('');
-            array.forEach(function(char, i) { 
-                if (char === "<") array[i] = ">"; 
-            });
-            return array.join('');
+            val = val.replace(new RegExp('<', 'g'),'>');
+            val = val.replace(new RegExp('0', 'g'),'1');
+            val = val.replace(new RegExp('==', 'g'),'!=');
+            console.log(val);
+            return val;
         }
     }
 };
 
 fuzzer.seed(0);
-var markDown = fs.readFileSync('sample.java','utf-8');
-let mutuatedString = fuzzer.mutate.string(markDown);
-fs.writeFileSync('sample.java', mutuatedString, "utf8");
+var java = fs.readFileSync('sample.java','utf-8');
+let mutuated_java = fuzzer.mutate.string(java);
+fs.writeFileSync('sample.java', mutuated_java, 'utf8');
