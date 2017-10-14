@@ -1,0 +1,14 @@
+---
+- hosts: localhost
+  
+  tasks:
+    - name: installing node js
+      apt:
+        name: nodejs
+        update_cache: yes
+
+     - name: installing node js
+       apt:
+         name: npm
+         update_cache: yes
+      
