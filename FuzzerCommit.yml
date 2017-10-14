@@ -10,6 +10,7 @@
       accept_hostkey: yes
       force: yes
       update: yes
+      version: fuzzer
 
   - name: Run npm install
     shell: npm install
