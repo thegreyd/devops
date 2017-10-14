@@ -1,0 +1,26 @@
+---
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+  - name: clone iTrust repo
+    git:
+      repo: ssh://git@github.ncsu.edu/zsthampi/iTrust-v23
+      dest: "{{ home }}/development/iTrust-v23"
+      accept_hostkey: yes
+      force: yes
+      update: yes
+
+  - name: Run npm install
+    shell: npm install
+
+  - name: Run Fuzzer
+    shell: node main.js
+
+  - name: Commit files to Github
+    command: "{{ item }}"
+    with_items:
+      - git add .
+      - git commit -m 'Code files have been fuzzed'
+      - git push  
+
