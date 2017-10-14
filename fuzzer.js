@@ -11,9 +11,14 @@ var fuzzer = {
     mutate: {
         string: function(val) {
             // MUTATE IMPLEMENTATION HERE
+            // replace all < with >
             val = val.replace(new RegExp('<', 'g'),'>');
+            // replace all 0 with 1
             val = val.replace(new RegExp('0', 'g'),'1');
+            // replace all == with !=
             val = val.replace(new RegExp('==', 'g'),'!=');
+            // replace all strings with helloworld12
+            val = val.replace(new RegExp('".*?"', 'g'),'"helloworld12"');
             console.log(val);
             return val;
         }
