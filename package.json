@@ -4,9 +4,16 @@
   "description": "Stuff for milestone2",
   "main": "analysis.js",
   "dependencies": {
-    "random-js": "^1.0.8"
+    "random-js": "^1.0.8",
+    "estraverse": "~4.2.0",
+    "esprima": "^3.0.0"
+    
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "esprima": "^3.0.0",
+    "random-js": "^1.0.8",
+    "estraverse": "~4.2.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
