@@ -1,0 +1,181 @@
+---
+- hosts: localhost
+
+  vars:
+    packages:
+      - gcc
+      - git
+      - git-core
+      - oracle-java8-installer
+      - oracle-java8-set-default
+      - maven
+      - mysql-server
+      - python-software-properties
+
+  
+  vars_prompt:
+    - name: 'id'
+      prompt: 'github user id'
+
+    - name: 'password'
+      prompt: 'password'
+
+  tasks:
+
+    - name: Key
+      shell: sudo add-apt-repository -y ppa:webupd8team/java; echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections; echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
+      become: yes
+      become_method: sudo
+
+    - name: Jenkins Key
+      shell: wget -q -O - https://pkg.jenkins.io/debian/jenkins-ci.org.key | sudo apt-key add -
+
+    - name: Create Files for Jenkins
+      shell: sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+
+    - name: Updating apt-get cache
+      apt:
+        update_cache: yes
+      become: yes
+      become_method: sudo
+
+    - name: Install Required packages
+      apt: name="{{item}}" state=present
+      with_items: "{{ packages}}"
+      become: yes
+      become_method: sudo
+
+#      shell: cd /opt; wget http://www-us.apache.org/dist/tomcat/tomcat-9/v9.0.0.M17/bin/apache-tomcat-9.0.0.M17.tar.gz; tar xzf apache-tomcat-9.0.0.M17.tar.gz; mv apache-tomcat-9.0.0.M17 tomcat9
+#      become: yes
+#      become_method: sudo
+#      args:
+#        creates: /opt/tomcat9
+
+    - name: Install Jenkins
+      apt: name="jenkins" state=present
+      become: yes
+
+#    - name: Export Environment Variables
+#      shell: echo "export CATALINA_HOME="/opt/tomcat9"" >> ~/.profile; echo "export JAVA_HOME="/usr/lib/jvm/java-8-oracle"" >> ~/.profile; echo "export JRE_HOME="/usr/lib/jvm/java-8-oracle/jre"" >> ~/.profile
+
+#    - name: Copy MySQL Configuration file
+#      copy:
+#        src: /root/CSC519_Project/iTrust/my.cnf
+#        dest: /etc/mysql/my.cnf
+#        owner: root
+#        group: root
+#        mode: 0500
+#      become: yes
+
+
+    - name: remove case sensitivity in mysql
+      blockinfile:
+        dest: /etc/mysql/my.cnf
+        block: |
+          [mysqld]
+          lower_case_table_names = 1
+      register: mysql_case_sensitivity
+      become: yes
+
+    - name: update plugin value on mysql root user
+      shell: >
+        mysql -u root --execute "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root'; FLUSH PRIVILEGES;"
+      become: yes
+      when: mysql_plugin.changed
+
+#      become_method: sudo
+
+#    - name: Copy Tomcat Configuration file
+#      copy:
+#        src: /root/CSC519_Project/iTrust/tomcat-users.xml
+#        dest: /opt/tomcat9/conf/tomcat-users.xml
+#        owner: root
+#        group: root
+#        mode: 0500
+#      become: yes
+#      become_method: sudo
+
+    - name: Restart MySQL Server
+      service:
+        name: mysql
+        state: restarted
+      become: yes
+      become_method: sudo
+
+    - copy:
+        src: /root/CSC519_Project/iTrust/jenkins.xml
+        dest: /var/lib/jenkins/config.xml
+        owner: jenkins
+        group: jenkins
+        mode: 0777
+      become: yes
+      become_method: sudo
+
+    - copy:
+        src: /root/CSC519_Project/iTrust/job.xml
+        dest: /var/lib/jenkins/jobs/iTrust/config.xml
+        owner: jenkins
+        group: jenkins
+        mode: 0777
+      become: yes
+      become_method: sudo
+
+
+#    - name: Git Clone 
+#      shell: "https://github.ncsu.edu/mpdesai/iTrust-v23.git"
+#        dest: /var/lib/jenkins/workspace/iTrust/iTrust-v23
+#      become: yes
+
+    - name: Set Ownership
+      shell: chown -R jenkins:jenkins /var/lib/jenkins/workspace/iTrust/
+      become: yes
+      become_method: sudo
+
+    - name: Restart jenkins
+      service:
+        name: jenkins
+        state: restarted
+      become: yes
+      become_method: sudo
+
+    - wait_for:
+        timeout: 60
+
+    - name: Jenkins-cli
+      shell: cd /var/lib/jenkins/; wget localhost:8080/jnlpJars/jenkins-cli.jar; chown jenkins /var/lib/jenkins/jenkins-cli.jar; chmod 777 /var/lib/jenkins/jenkins-cli.jar
+      become: yes
+      become_method: sudo
+
+    - name: install test stability plugin
+      shell: java -jar /var/lib/jenkins/jenkins-cli.jar -s http://{{ansible_ssh_host}}:8080/ install-plugin "test-stability" -deploy
+      ignore_errors: yes
+
+    - name: install test stability plugin
+      shell: java -jar /var/lib/jenkins/jenkins-cli.jar -s http://{{ansible_ssh_host}}:8080/ install-plugin "test-stability" -deploy
+
+    - name: install jacoco plugin
+      shell: java -jar /var/lib/jenkins/jenkins-cli.jar -s http://{{ansible_ssh_host}}:8080/ install-plugin "jacoco" -deploy
+      ignore_errors: yes
+
+    - name: install jacoco plugin
+      shell: java -jar /var/lib/jenkins/jenkins-cli.jar -s http://{{ansible_ssh_host}}:8080/ install-plugin "jacoco" -deploy
+
+    - name: Restart jenkins
+      service:
+        name: jenkins
+        state: restarted
+      become: yes
+      become_method: sudo
+
+
+    - wait_for:
+        timeout: 10
+
+    - name: Run iTrust job
+      shell: java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build iTrust
+
+    - name: Waiting for iTrust war file
+      wait_for:
+        path: /var/lib/jenkins/workspace/iTrust/iTrust-v23/target/iTrust-23.0.0.war
+        timeout: 100
+
