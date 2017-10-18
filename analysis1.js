@@ -60,18 +60,19 @@ function FunctionBuilder()
 	{   if(this.LineCount>120 || this.MaxNestingDepth>3 ){
 		console.log(
 		   (
-		   	"{0}(): {1}\n" +
+		   /*	"{0}(): {1}\n" +
 		   	"============\n" +
 			   "SimpleCyclomaticComplexity: {2}\t" +
 				"MaxNestingDepth: {3}\t" +
 				"MaxConditions: {4}\t" +
 				"Parameters: {5}\t" +
-				"Lines: {6}\n\n"
+                "Lines: {6}\n\n"*/
+             "FAILED"   
 				
 			)
-			.format(this.FunctionName, this.StartLine,
+		/*	.format(this.FunctionName, this.StartLine,
 				     this.SimpleCyclomaticComplexity, this.MaxNestingDepth,
-			        this.MaxConditions, this.ParameterCount, this.LineCount)
+			        this.MaxConditions, this.ParameterCount, this.LineCount)*/
 		);
 	}
 	    
