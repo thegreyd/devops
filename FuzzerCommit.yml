@@ -2,26 +2,37 @@
 
 - hosts: localhost
   gather_facts: no
+  become: yes
+  
+  vars_prompt:
+    - name: 'id'
+      prompt: 'github user id'
+
+    - name: 'password'
+      prompt: 'password'
 
   tasks:
-
+  
+ #   command: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+  
   - name: Install Packages
     apt: name={{ item }} update_cache=yes state=latest
     with_items:
       - build-essential
       - npm
-      - nodejs-legacy
+      - nodejs
       - git
       - curl
-
+  
   - name: clone iTrust repo
     git:
-      repo: ssh://git@github.ncsu.edu/zsthampi/iTrust-v23
-      dest: "{{ home }}/development/iTrust-v23"
+      repo: ssh://git@github.ncsu.edu/sbnagend/iTrust-v23
+      dest: "/home/sbnagend/iTrust-v23"
       accept_hostkey: yes
-      force: yes
-      update: yes
-      version: fuzzer
+    become: no
+     # force: yes
+#      update: yes
+#      version: fuzzer
 
   - name: Run NPM Install
     command: npm install
