@@ -35,7 +35,10 @@
 #      version: fuzzer
 
   - name: Run NPM Install
-    command: npm install
+    command: "{{ item }}"
+    with_items:
+      - npm install
+      - node_modules/pegjs/bin/pegjs -o javaparser.js java.pegjs
 
   - name: Run Fuzzer
     command: node main.js
