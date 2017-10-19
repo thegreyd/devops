@@ -165,30 +165,72 @@ function complexity(filePath)
 
 			builders[builder.FunctionName] = builder;
 
+			// Check for Sync calls
+			var sync_calls = 0;
 			
-			
-					 traverseWithParents(node, function(node){
+			traverseWithParents(node, function(node){
+				if(node.type === 'ForStatement' || node.type === 'WhileStatement'){
+					nestCount = 1;
+					
+					traverseWithParents(node.body, function(node){
 						if(node.type === 'ForStatement' || node.type === 'WhileStatement'){
-						   nestCount = 1;
-						   traverseWithParents(node.body, function(node){
-							  if(node.type === 'ForStatement' || node.type === 'WhileStatement'){
-								 nestCount++;
-							  }
-						   });
-						   if(nestCount > maxNestCount){
-							  maxNestCount = nestCount;
-						   }
-			
+							nestCount++;
 						}
-						
-						builder.MaxNestingDepth = maxNestCount;
-					 });
+					});
 				
+				if(nestCount > maxNestCount){
+					maxNestCount = nestCount;
+				}
+
+				}
+
+				builder.MaxNestingDepth = maxNestCount;
+
+				if(node.type === "CallExpression" && typeof(node.callee.object) === "object" && "type" in node.callee.object && node.callee.object.type === "Identifier" 
+					&& node.callee.property.type === "Identifier" && node.callee.property.name.indexOf("Sync") != -1) {
+					sync_calls += 1;
+				}
+
+			});
 			
+			// console.log("SYNC CALLS ",builder.FunctionName, sync_calls);
+			if (sync_calls > 1) {
+				console.log("SYNC CALLS : FAILED ",builder.FunctionName);
+			}
+
+		}
+
+		if("type" in node && (node.type === "CallExpression" || node.type === "MemberExpression")) {
+			// console.log("MESSAGE CHAINS : ", message_chains(node));
+
+			if (message_chains(node) >= 4) {
+				// console.log("MESSAGE CHAINS : FAILED ",node);
+				console.log("MESSAGE CHAINS : FAILED ");
+			}
 		}
 
 	});
 
+}
+
+function message_chains(node) {
+	if(node.type.indexOf("Expression") != -1) {
+		if ("callee" in node) {
+			if (node.callee.type === "Identifier") {
+				return 1;
+			} else {
+				return message_chains(node.callee) + 1;
+			}
+		}
+		if ("object" in node) {
+			if (node.object.type === "Identifier") {
+				return 1;
+			} else {
+				return message_chains(node.object) + 1;
+			}
+		}
+		return 0;
+	}
 }
 
 // Helper function for counting children of node.
