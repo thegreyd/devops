@@ -33,6 +33,8 @@ function loadJadeTemplates()
 {
 	var options = {pretty:true};
 
+	fs.readFileSync('jade/singlechoice.jade', 'utf8');
+	fs.readFileSync('jade/singlechoice.jade', 'utf8');
 	var singlechoice = jade.compile(fs.readFileSync('jade/singlechoice.jade', 'utf8'),options);
 	var multichoice = jade.compile(fs.readFileSync('jade/multichoice.jade', 'utf8'),options);
 	var singlechoicetable = jade.compile(fs.readFileSync('jade/singlechoicetable.jade', 'utf8'),options);
@@ -119,6 +121,19 @@ function ReadBody(lines)
 
 function EscapeCode(text)
 {
+	// for(var i=0; i<10; i++) {
+	// 	var j = 0;
+	// 	while(j<10) {
+	// 		j += 1;
+	// 		var k = 0;
+	// 		// while (k<10) {
+	// 		// 	k += 1;
+	// 			while (i<0) {
+	// 				i += 1
+	// 			}
+	// 		// }
+	// 	}
+	// }
 	return text
 	.replace(/\\/g,'\\\\')
 	.replace(/`/g, '\\`')
