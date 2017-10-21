@@ -204,8 +204,8 @@ function complexity(filePath)
 			// console.log("MESSAGE CHAINS : ", message_chains(node));
 
 			if (message_chains(node) >= 4) {
-				// console.log("MESSAGE CHAINS : FAILED ",node);
-				console.log("MESSAGE CHAINS : FAILED ");
+				console.log("MESSAGE CHAINS : FAILED ",message_chains(node));
+				// console.log("MESSAGE CHAINS : FAILED ");
 			}
 		}
 
@@ -219,10 +219,13 @@ function message_chains(node) {
 			if (node.callee.type === "Identifier") {
 				return 1;
 			} else {
-				return message_chains(node.callee) + 1;
+				return message_chains(node.callee);
 			}
 		}
 		if ("object" in node) {
+			if (node.object.type === "Identifier" && node.property.type === "Identifier") {
+				return 2;
+			}
 			if (node.object.type === "Identifier") {
 				return 1;
 			} else {
