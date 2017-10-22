@@ -47,7 +47,7 @@ if [ $wc -gt 0 ]; then exit 1; fi;</command>
           </logTexts>
           <EscalateStatus>false</EscalateStatus>
           <RunIfJobSuccessful>true</RunIfJobSuccessful>
-          <script>ansible-playbook /var/lib/jenkins/checkbox_deploy.yml --vault-password-file /var/lib/jenkins/password.txt</script>
+          <script></script>
         </hudson.plugins.postbuildtask.TaskProperties>
       </tasks>
     </hudson.plugins.postbuildtask.PostbuildTask>
