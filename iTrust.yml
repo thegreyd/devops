@@ -12,13 +12,13 @@
       - mysql-server
       - python-software-properties
 
-  
+
   vars_prompt:
     - name: 'id'
-      prompt: 'github user id'
+      prompt: github user id
 
     - name: 'password'
-      prompt: 'password'
+      prompt: password
 
   tasks:
 
@@ -60,7 +60,7 @@
 
 #    - name: Copy MySQL Configuration file
 #      copy:
-#        src: /root/CSC519_Project/iTrust/my.cnf
+#        src: /home/sbnagend/csc_519_devops/my.cnf
 #        dest: /etc/mysql/my.cnf
 #        owner: root
 #        group: root
@@ -81,13 +81,13 @@
       shell: >
         mysql -u root --execute "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root'; FLUSH PRIVILEGES;"
       become: yes
-      when: mysql_plugin.changed
+#      when: mysql_plugin.changed
 
 #      become_method: sudo
 
 #    - name: Copy Tomcat Configuration file
 #      copy:
-#        src: /root/CSC519_Project/iTrust/tomcat-users.xml
+#        src: /home/sbnagend/csc_519_devops/tomcat-users.xml
 #        dest: /opt/tomcat9/conf/tomcat-users.xml
 #        owner: root
 #        group: root
@@ -95,7 +95,7 @@
 #      become: yes
 #      become_method: sudo
 
-    - name: Restart MySQL Server
+    - name: Restart mysql
       service:
         name: mysql
         state: restarted
@@ -103,7 +103,7 @@
       become_method: sudo
 
     - copy:
-        src: /root/CSC519_Project/iTrust/jenkins.xml
+        src: /home/sbnagend/csc_519_devops/jenkins.xml
         dest: /var/lib/jenkins/config.xml
         owner: jenkins
         group: jenkins
@@ -112,7 +112,7 @@
       become_method: sudo
 
     - copy:
-        src: /root/CSC519_Project/iTrust/job.xml
+        src: /home/sbnagend/csc_519_devops/job.xml
         dest: /var/lib/jenkins/jobs/iTrust/config.xml
         owner: jenkins
         group: jenkins
@@ -120,11 +120,15 @@
       become: yes
       become_method: sudo
 
-
-#    - name: Git Clone 
-#      shell: "https://github.ncsu.edu/mpdesai/iTrust-v23.git"
-#        dest: /var/lib/jenkins/workspace/iTrust/iTrust-v23
-#      become: yes
+    - name: clone iTrust repo
+      git:
+        repo: ssh://git@github.ncsu.edu/sbnagend/iTrust-v23
+        dest: "/home/sbnagend/iTrust-v23"
+        accept_hostkey: yes
+        force: yes
+        update: yes
+        version: fuzzer
+      become: no       
 
     - name: Set Ownership
       shell: chown -R jenkins:jenkins /var/lib/jenkins/workspace/iTrust/
