@@ -31,4 +31,8 @@ The Jenkins setup would be done automatically then. </br>
 export wc=`nodejs analysis.js | grep FAILED | wc -l`
 if [ $wc -gt 0 ]; then exit 1; fi;
 ```
-
+#### Detected Items
+- Long method : function ProcessTokens in checkbox.io/server-side/site/marqdown.js failed the Long Method validation
+- Sync calls : checkbox.io/server-side/site/marqdown.js failed validation for Sync calls as the function loadJadeTemplates has more than 1 Sync call. (readFileSync)
+- Message chains : 
+- The Big O : We DID NOT find any violations for this validation
