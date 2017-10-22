@@ -1,0 +1,92 @@
+---
+- hosts: all
+  gather_facts: no
+
+  tasks:
+
+  - name: Get credentials from vault
+    include_vars:
+      file: password.yml
+      name: vault
+
+  # Update the Ubuntu Server
+  - name: "install aptitude"
+    apt:
+      name: aptitude
+    become: yes
+    become_user: root
+
+  - name: "update and upgrade using apt-get"
+    apt:
+      update_cache: yes
+      upgrade: yes
+    become: yes
+    become_user: root
+    register: upgrade
+
+  - name: "dist-upgrade using apt-get"
+    apt:
+      upgrade: dist
+    become: yes
+    become_user: root
+    register: dist
+
+  - name: Install apt dependencies
+    apt:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - python-pip
+      - npm
+      - nodejs
+    become: yes
+    register: jenkins_install
+
+  - name: Install pip dependencies
+    pip:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - python-jenkins
+      - lxml
+      - boto 
+
+  - name: Install plugins
+    jenkins_plugin:
+      name: "{{ item }}"
+      state: present
+      timeout: 60
+      params:
+        url_username: "{{ vault['jenkins_user'] }}"
+        url_password: "{{ vault['jenkins_pass'] }}"
+    with_items:
+      - workflow-aggregator
+      - github-branch-source
+      - postbuild-task
+    retries: 5
+    register: plugin_install
+
+  - name: add checkbox job
+    jenkins_job:
+      config: "{{ lookup('file', 'checkbox.xml') }}"
+      state: present
+      name: checkbox
+      url: http://localhost:8080/
+      user: "{{ vault['jenkins_user'] }}"
+      password: "{{ vault['jenkins_pass'] }}"
+    register: checkbox_job_add
+
+  - name: trigger checkbox build
+    vars: 
+      start_build_script: |
+        import hudson.model.*
+        def job = hudson.model.Hudson.instance.getJob("$jobname")
+        hudson.model.Hudson.instance.queue.schedule(job, 0)
+    jenkins_script:
+      args: 
+        jobname: checkbox
+      script: "{{ start_build_script }}"
+      user: "{{ vault['jenkins_user'] }}"
+      password: "{{ vault['jenkins_pass'] }}"
+
+...
