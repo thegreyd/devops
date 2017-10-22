@@ -14,6 +14,30 @@ Integration of different parts. Done by all team members together in multiple me
 
 The project was easy to split up, since each part could be developed individually. We took ownership of one task each, and finally integrated everything together. The report below explains our experiences at each step, and at Integration
 
+### FUZZER 
+
+#### Setup Fuzzer
+- `npm install`
+- `node_modules/pegjs/bin/pegjs -o javaparser.js java.pegjs`
+
+#### Run Fuzzer
+- `node fuzzer.js`
+
+#### Revert back changes
+- `git checkout iTrust/src/*`
+
+#### What's happening
+- `java.pegjs` is a grammar file which has all the grammar rules to parse a Java program
+- `pegjs` is an npm module which takes a grammar file and outputs a parser program `javaparser.js` in this case
+- Where did this `java.pegjs` file come from? From another npm module called [java-parser](https://github.com/mazko/jsjavaparser)
+- Why are we not using that module as is? See [this issue](https://github.com/mazko/jsjavaparser/issues/7). It basically means that there's currently no support for getting position of parsed nodes in the source code. And we absolutely need that to modify the source code. 
+- So we cooked our own version of grammar file ([not really](https://github.com/mazko/jsjavaparser/issues/7#issuecomment-286941614)), and added support for node positions.
+- Okay we have a parser. Now we select some `.java` files randomly and modify them:
+    + In conditions, swap '<' with '>'
+    + In conditions, swap '==' with '!='
+    + In Numbers, swap 0 with 1
+    + In Strings, replace all chars with 'z's
+
 ### ANALYSIS COMPONENTS 
 
 We extended the code from HW2 to create an analysis component using JS and Esprima. </br>
@@ -36,6 +60,6 @@ if [ $wc -gt 0 ]; then exit 1; fi;
 - Sync calls : checkbox.io/server-side/site/marqdown.js failed validation for Sync calls as the function loadJadeTemplates has more than 1 Sync call. (readFileSync)
 - Message chains : 
 Below are the items that failed validation for message chains 
-1. Line 173 on checkbox.io/server-side/site/routes/study.js (req.files.files.length)
-2. Line 122 on checkbox.io/server-side/site/marqdown.js (return text.replace() ... )
+    + Line 173 on checkbox.io/server-side/site/routes/study.js (req.files.files.length)
+    + Line 122 on checkbox.io/server-side/site/marqdown.js (return text.replace() ... )
 - The Big O : We DID NOT find any violations for this validation
