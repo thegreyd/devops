@@ -52,7 +52,7 @@ def checktest():
                                         print failed
                         i += 1
                         if int (failed) !=  0:
-                                print "match found. Failure value", failed
+                         #       print "match found. Failure value", failed
                                 res_dict[testName] = 1
         pickle.dump(res_dict, open("res_dict" , "rb+"))
 #               print i
@@ -60,6 +60,6 @@ def checktest():
 if sys.argv[1] == 'uselesstest':
         uselesstest()
         sys.exit()
-else:
+elif sys.argv[1] == 'checktest':
         checktest()
         sys.exit()
