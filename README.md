@@ -16,17 +16,19 @@ The project was easy to split up, since each part could be developed individuall
 
 ### ANALYSIS COMPONENTS 
 
-We extended the code from HW2 to create an analysis component using JS and Esprima. 
+We extended the code from HW2 to create an analysis component using JS and Esprima. </br>
 The file is called `analysis.js`
 
-If we detect a violation, we print a FAILED statement on the console. 
-Ex : `MESSAGE CHAINS : FAILED`
+If we detect a violation, we print a FAILED statement on the console. </br>
+Ex : `MESSAGE CHAINS : FAILED` </br>
 Later, we use this console output to fail the Jenkins build. (It is failed is the keyword `FAILED` is present in console output)
 
-To integrate with Jenkins, we pushed our detection code to checkbox.io GITHUB repository. 
-We updated the Jenkins job XML file to run some additional steps during the deploy step. 
-The Jenkins setup would be done automatically then. 
+To integrate with Jenkins, we pushed our detection code to checkbox.io GITHUB repository. </br>
+We updated the Jenkins job XML file to run some additional steps during the deploy step. </br>
+The Jenkins setup would be done automatically then. </br>
 
-```export wc=`nodejs analysis.js | grep FAILED | wc -l`
-if [ $wc -gt 0 ]; then exit 1; fi;```
+```
+export wc=`nodejs analysis.js | grep FAILED | wc -l`
+if [ $wc -gt 0 ]; then exit 1; fi;
+```
 
