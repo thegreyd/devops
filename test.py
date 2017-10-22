@@ -1,37 +1,62 @@
-import os
 import sys
 import pickle
+import os
 import xml.etree.ElementTree as ET
 
+def uselesstest():
+        res_dict = pickle.load(open('res_dict', 'rb+'))
+        for i in res_dict :
+#		print i , res_dict[i] 
+                if res_dict[i] == 0 :
+                        print "Useless Test", i
+
 #fd = open("/var/lib/jenkins/jobs/iTrust/builds/15/junitResult.xml", 'r')
-fd = ET.parse('/var/lib/jenkins/jobs/iTrust/builds/15/junitResult.xml')
-root = fd.getroot()
-#print root.getchildren()
-i = 0
-tests = filter(lambda x: x.tag=="suites", root.getchildren())
-#print tests[0]
-allcases = {}
-tests = tests[0]
-for testSuite in tests.getchildren():
-	suiteElements = testSuite.getchildren()
-	testcases = filter(lambda x: x.tag=="cases", suiteElements)
-#	print testcases
-	
-	if len(testcases)!=0:
-        	testcases = testcases[0]
+def checktest():
+
+#for i in range (1 , 101):
+	res_dict = pickle.load(open('res_dict', 'rb+'))
+	cases = []
+	fd = ET.parse('/var/lib/jenkins/jobs/iTrust/builds/15/junitResult.xml')
+	root = fd.getroot()
+	#print root.getchildren()
+	i = 0
+	suites = filter(lambda x: x.tag=="suites", root.getchildren())
+	suites = suites[0]
+	for Suite in suites.getchildren():
+		suiteElements = Suite.getchildren()
+		for j in suiteElements:
+			if j.tag == "cases":
+				cases.append(j) 
+				print "match"
+		
+		if len(cases)!=0:
+			cases = cases[0]
 #		print testcases
 
-		for case in testcases:
+		for case in cases:
 
-            		testName = filter(lambda x: x.tag=="testName", case)
-			print "testName is :", testName
-			testName = testName[0].text
-               		skippedStatus = filter(lambda x: x.tag == "skipped", case)[0].text
-               		failureStatus = filter(lambda x: x.tag == "failedSince", case)[0].text
+			for j in case :
+			#	print x, x.tag
+				if j.tag == "testName":
+					testName = j.text
+					print testName
+				elif j.tag == "skipped":
+					skipped = j.text
+					print skipped
+				elif j.tag == "failedSince":
+					failed = j.text
+					print failed			
          		i += 1    
-			print "testname: ", testName , "\nskipped:", skippedStatus ,"\n failed:", failureStatus
-			allcases[testName] = 0
-			pickle.dump(allcases , open("res_dict" , "rb+"))
-		print i
+			if int (failed) !=  0:
+				print "match found. Failure value", failed
+				res_dict[testName] = 1
+	pickle.dump(res_dict, open("res_dict" , "rb+"))		
+#		print i
 
+if sys.argv[1] == 'uselesstest':
+        uselesstest()
+        sys.exit()
+else:
+	checktest()
+	sys.exit()
 
