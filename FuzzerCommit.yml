@@ -4,13 +4,6 @@
   gather_facts: no
   become: yes
   
-  vars_prompt:
-    - name: 'id'
-      prompt: 'github user id'
-
-    - name: 'password'
-      prompt: 'password'
-
   tasks:
   
  #   command: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
@@ -19,7 +12,6 @@
     apt: name={{ item }} update_cache=yes state=latest
     with_items:
       - build-essential
-      - npm
       - nodejs
       - git
       - curl
@@ -29,24 +21,35 @@
       repo: ssh://git@github.ncsu.edu/sbnagend/iTrust-v23
       dest: "/home/sbnagend/iTrust-v23"
       accept_hostkey: yes
+      force: yes
+      update: yes
+      version: fuzzer
     become: no
-     # force: yes
-#      update: yes
-#      version: fuzzer
 
   - name: Run NPM Install
     command: "{{ item }}"
+    args: 
+      chdir: /home/sbnagend/iTrust-v23/
     with_items:
       - npm install
       - node_modules/pegjs/bin/pegjs -o javaparser.js java.pegjs
 
   - name: Run Fuzzer
-    command: node main.js
+    command: node fuzzer.js
+    args: 
+      chdir: /home/sbnagend/iTrust-v23/
 
+  - name: Change git config
+    command: git config remote.origin.url git+ssh://git@github.ncsu.edu/sbnagend/iTrust-v23
+    args:
+      chdir: /home/sbnagend/iTrust-v23/
+  
   - name: Commit files to Github
     command: "{{ item }}"
+    args:
+      chdir: /home/sbnagend/iTrust-v23/
     with_items:
       - git add .
       - git commit -m 'Code files have been fuzzed'
-      - git push  
-
+      - git push origin fuzzer
+    become: no
