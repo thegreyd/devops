@@ -1,6 +1,10 @@
 # csc_519_devops
 Repo for CSC 519 - DevOps
 
+## ScreenCasts 
+- [Analysis Components](https://youtu.be/FPh9yERc7F8)
+- [Testing Component](https://youtu.be/-On7yzNOh_k)
+
 ## Team
 - Zubin Thampi (zsthampi) - Analysis Components
 - Meghav Desai (mpdesai) - Useless test detector
@@ -13,6 +17,31 @@ Integration of different parts. Done by all team members together in multiple me
 ## MILESTONE 2 REPORT
 
 The project was easy to split up, since each part could be developed individually. We took ownership of one task each, and finally integrated everything together. The report below explains our experiences at each step, and at Integration
+=======
+### FUZZER 
+
+#### Run Fuzzer
+- `fuzzer.js` expects a folder named `iTrust` in the same directory, from which it picks up 5 random Java files.
+- `cd Fuzzer`
+- `npm install`
+- `node_modules/pegjs/bin/pegjs -o javaparser.js java.pegjs`
+- `node fuzzer.js`
+
+#### Revert back changes
+- `git checkout iTrust/src/*`
+
+#### What's happening
+- `java.pegjs` is a grammar file which has all the grammar rules to parse a Java program
+- `pegjs` is an npm module which takes a grammar file and outputs a parser program `javaparser.js` in this case
+- Where did this `java.pegjs` file come from? From another npm module called [java-parser](https://github.com/mazko/jsjavaparser)
+- Why are we not using that module as is? See [this issue](https://github.com/mazko/jsjavaparser/issues/7). It basically means that there's currently no support for getting position of parsed nodes in the source code. And we absolutely need that to modify the source code. 
+- So we cooked our own version of grammar file ([not really](https://github.com/mazko/jsjavaparser/issues/7#issuecomment-286941614)), and added support for node positions.
+- Okay we have a parser. Now we select some `.java` files randomly and modify them:
+    + In conditions, swap '<' with '>'
+    + In conditions, swap '==' with '!='
+    + In Numbers, swap 0 with 1
+    + In Strings, replace all chars with 'z's
+- We have kept fuzzer.js in the [iTrust repository](https://github.ncsu.edu/zsthampi/iTrust-v23) for simplicity. Ansible clones the iTrust repo and runs the fuzzer, commit-and-push, after which a Jenkins build is fired.
 
 ### ANALYSIS COMPONENTS 
 
@@ -31,6 +60,9 @@ The Jenkins setup would be done automatically then. </br>
 export wc=`nodejs analysis.js | grep FAILED | wc -l`
 if [ $wc -gt 0 ]; then exit 1; fi;
 ```
+=======
+**NOTE** - 
+The report for Analysis Components is present in a separate markdown file - [AnalysisComponents.md](https://github.ncsu.edu/zsthampi/csc_519_devops/blob/milestone2/AnalysisComponents.md)
 #### Detected Items
 - Long method : function ProcessTokens in checkbox.io/server-side/site/marqdown.js failed the Long Method validation
 - Sync calls : checkbox.io/server-side/site/marqdown.js failed validation for Sync calls as the function loadJadeTemplates has more than 1 Sync call. (readFileSync)
@@ -38,4 +70,6 @@ if [ $wc -gt 0 ]; then exit 1; fi;
 Below are the items that failed validation for message chains 
 1. Line 173 on checkbox.io/server-side/site/routes/study.js (req.files.files.length)
 2. Line 122 on checkbox.io/server-side/site/marqdown.js (return text.replace() ... )
+    + Line 173 on checkbox.io/server-side/site/routes/study.js (req.files.files.length)
+    + Line 122 on checkbox.io/server-side/site/marqdown.js (return text.replace() ... )
 - The Big O : We DID NOT find any violations for this validation

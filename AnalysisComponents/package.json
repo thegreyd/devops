@@ -1,0 +1,29 @@
+{
+  "name": "milestone2",
+  "version": "1.0.0",
+  "description": "Stuff for milestone2",
+  "main": "analysis.js",
+  "dependencies": {
+    "random-js": "^1.0.8",
+    "estraverse": "~4.2.0",
+    "esprima": "^3.0.0"
+    
+  },
+  "devDependencies": {
+    "esprima": "^3.0.0",
+    "random-js": "^1.0.8",
+    "estraverse": "~4.2.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.ncsu.edu/zsthampi/csc_519_devops.git"
+  },
+  "keywords": [
+    "milestone2"
+  ],
+  "author": "",
+  "license": "ISC"
+}
