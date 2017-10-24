@@ -4,7 +4,7 @@ Repo for CSC 519 - DevOps
 ## ScreenCast 
 [Analysis Components](https://youtu.be/FPh9yERc7F8)
 
-[Testing Comaponent](https://youtu.be/-On7yzNOh_k)
+[Testing Component](https://youtu.be/-On7yzNOh_k)
 
 ## Team
 - Zubin Thampi (zsthampi) - Analysis Components
