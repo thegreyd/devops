@@ -21,11 +21,11 @@ The project was easy to split up, since each part could be developed individuall
 
 ### FUZZER 
 
-#### Setup Fuzzer
+#### Run Fuzzer
+- `fuzzer.js` expects a folder named `iTrust` in the same directory, from which it picks up 5 random Java files.
+- `cd Fuzzer`
 - `npm install`
 - `node_modules/pegjs/bin/pegjs -o javaparser.js java.pegjs`
-
-#### Run Fuzzer
 - `node fuzzer.js`
 
 #### Revert back changes
@@ -42,6 +42,7 @@ The project was easy to split up, since each part could be developed individuall
     + In conditions, swap '==' with '!='
     + In Numbers, swap 0 with 1
     + In Strings, replace all chars with 'z's
+- We have kept fuzzer.js in the [iTrust repository](https://github.ncsu.edu/zsthampi/iTrust-v23) for simplicity. Ansible clones the iTrust repo and runs the fuzzer, commit-and-push, after which a Jenkins build is fired.
 
 ### ANALYSIS COMPONENTS 
 

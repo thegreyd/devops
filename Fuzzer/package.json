@@ -1,0 +1,22 @@
+{
+  "name": "csc_519_devops",
+  "version": "1.0.0",
+  "description": "Repo for CSC 519 - DevOps",
+  "main": "fuzzer.js",
+  "dependencies": {},
+  "devDependencies": {
+    "random-js": "^1.0.4",
+    "walk": "2.3.9",
+    "pegjs": "0.10.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.ncsu.edu:zsthampi/csc_519_devops.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
