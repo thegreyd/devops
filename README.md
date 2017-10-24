@@ -17,7 +17,6 @@ Integration of different parts. Done by all team members together in multiple me
 ## MILESTONE 2 REPORT
 
 The project was easy to split up, since each part could be developed individually. We took ownership of one task each, and finally integrated everything together. The report below explains our experiences at each step, and at Integration
-=======
 ### FUZZER 
 
 #### Run Fuzzer
@@ -60,7 +59,6 @@ The Jenkins setup would be done automatically then. </br>
 export wc=`nodejs analysis.js | grep FAILED | wc -l`
 if [ $wc -gt 0 ]; then exit 1; fi;
 ```
-=======
 **NOTE** - 
 The report for Analysis Components is present in a separate markdown file - [AnalysisComponents.md](https://github.ncsu.edu/zsthampi/csc_519_devops/blob/milestone2/AnalysisComponents.md)
 #### Detected Items
