@@ -1,6 +1,6 @@
 ---
 - hosts: localhost
-
+  become: yes
   vars:
     packages:
       - gcc
@@ -11,14 +11,6 @@
       - maven
       - mysql-server
       - python-software-properties
-
-
-  vars_prompt:
-    - name: 'id'
-      prompt: github user id
-
-    - name: 'password'
-      prompt: password
 
   tasks:
 
@@ -45,28 +37,9 @@
       become: yes
       become_method: sudo
 
-#      shell: cd /opt; wget http://www-us.apache.org/dist/tomcat/tomcat-9/v9.0.0.M17/bin/apache-tomcat-9.0.0.M17.tar.gz; tar xzf apache-tomcat-9.0.0.M17.tar.gz; mv apache-tomcat-9.0.0.M17 tomcat9
-#      become: yes
-#      become_method: sudo
-#      args:
-#        creates: /opt/tomcat9
-
     - name: Install Jenkins
       apt: name="jenkins" state=present
       become: yes
-
-#    - name: Export Environment Variables
-#      shell: echo "export CATALINA_HOME="/opt/tomcat9"" >> ~/.profile; echo "export JAVA_HOME="/usr/lib/jvm/java-8-oracle"" >> ~/.profile; echo "export JRE_HOME="/usr/lib/jvm/java-8-oracle/jre"" >> ~/.profile
-
-#    - name: Copy MySQL Configuration file
-#      copy:
-#        src: /home/sbnagend/csc_519_devops/my.cnf
-#        dest: /etc/mysql/my.cnf
-#        owner: root
-#        group: root
-#        mode: 0500
-#      become: yes
-
 
     - name: remove case sensitivity in mysql
       blockinfile:
@@ -81,19 +54,6 @@
       shell: >
         mysql -u root --execute "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root'; FLUSH PRIVILEGES;"
       become: yes
-#      when: mysql_plugin.changed
-
-#      become_method: sudo
-
-#    - name: Copy Tomcat Configuration file
-#      copy:
-#        src: /home/sbnagend/csc_519_devops/tomcat-users.xml
-#        dest: /opt/tomcat9/conf/tomcat-users.xml
-#        owner: root
-#        group: root
-#        mode: 0500
-#      become: yes
-#      become_method: sudo
 
     - name: Restart mysql
       service:
@@ -111,6 +71,12 @@
       become: yes
       become_method: sudo
 
+    - name: Create iTrust directory
+      file:
+        path: /var/lib/jenkins/jobs/iTrust
+        state: directory
+        mode: 0777
+
     - copy:
         src: /home/sbnagend/csc_519_devops/job.xml
         dest: /var/lib/jenkins/jobs/iTrust/config.xml
@@ -119,11 +85,17 @@
         mode: 0777
       become: yes
       become_method: sudo
+    
+    - name: Create iTrust workspace
+      file:
+        path: /var/lib/jenkins/workspace
+        state: directory
+        mode: 0777
 
     - name: clone iTrust repo
       git:
         repo: ssh://git@github.ncsu.edu/sbnagend/iTrust-v23
-        dest: "/home/sbnagend/iTrust-v23"
+        dest: "/var/lib/jenkins/workspace/iTrust/"
         accept_hostkey: yes
         force: yes
         update: yes
@@ -154,8 +126,8 @@
       shell: java -jar /var/lib/jenkins/jenkins-cli.jar -s http://{{ansible_ssh_host}}:8080/ install-plugin "test-stability" -deploy
       ignore_errors: yes
 
-    - name: install test stability plugin
-      shell: java -jar /var/lib/jenkins/jenkins-cli.jar -s http://{{ansible_ssh_host}}:8080/ install-plugin "test-stability" -deploy
+    - name: install test Junit plugin
+      shell: java -jar /var/lib/jenkins/jenkins-cli.jar -s http://{{ansible_ssh_host}}:8080/ install-plugin "junit" -deploy
 
     - name: install jacoco plugin
       shell: java -jar /var/lib/jenkins/jenkins-cli.jar -s http://{{ansible_ssh_host}}:8080/ install-plugin "jacoco" -deploy

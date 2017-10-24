@@ -53,3 +53,16 @@
       - git commit -m 'Code files have been fuzzed'
       - git push origin fuzzer
     become: no
+  
+  - name: wait for time = polling period
+    wait_for: timeout=70
+
+  - name: git revert
+    command: "{{ item }}"
+    args:
+      chdir: /home/sbnagend/iTrust-v23/
+    with_items:
+      - git reset --hard HEAD^1
+      - git push origin fuzzer --force
+    become: no
+ 
