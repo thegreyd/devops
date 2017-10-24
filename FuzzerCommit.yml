@@ -1,0 +1,68 @@
+---
+
+- hosts: localhost
+  gather_facts: no
+  become: yes
+  
+  tasks:
+  
+ #   command: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+  
+  - name: Install Packages
+    apt: name={{ item }} update_cache=yes state=latest
+    with_items:
+      - build-essential
+      - nodejs
+      - git
+      - curl
+  
+  - name: clone iTrust repo
+    git:
+      repo: ssh://git@github.ncsu.edu/sbnagend/iTrust-v23
+      dest: "/home/sbnagend/iTrust-v23"
+      accept_hostkey: yes
+      force: yes
+      update: yes
+      version: fuzzer
+    become: no
+
+  - name: Run NPM Install
+    command: "{{ item }}"
+    args: 
+      chdir: /home/sbnagend/iTrust-v23/
+    with_items:
+      - npm install
+      - node_modules/pegjs/bin/pegjs -o javaparser.js java.pegjs
+
+  - name: Run Fuzzer
+    command: node fuzzer.js
+    args: 
+      chdir: /home/sbnagend/iTrust-v23/
+
+  - name: Change git config
+    command: git config remote.origin.url git+ssh://git@github.ncsu.edu/sbnagend/iTrust-v23
+    args:
+      chdir: /home/sbnagend/iTrust-v23/
+  
+  - name: Commit files to Github
+    command: "{{ item }}"
+    args:
+      chdir: /home/sbnagend/iTrust-v23/
+    with_items:
+      - git add .
+      - git commit -m 'Code files have been fuzzed'
+      - git push origin fuzzer
+    become: no
+  
+  - name: wait for time = polling period
+    wait_for: timeout=70
+
+  - name: git revert
+    command: "{{ item }}"
+    args:
+      chdir: /home/sbnagend/iTrust-v23/
+    with_items:
+      - git reset --hard HEAD^1
+      - git push origin fuzzer --force
+    become: no
+ 
