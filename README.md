@@ -40,7 +40,7 @@ The project was easy to split up, since each part could be developed individuall
     + In conditions, swap '==' with '!='
     + In Numbers, swap 0 with 1
     + In Strings, replace all chars with 'z's
-- We have kept fuzzer.js in the [iTrust repository](https://github.ncsu.edu/zsthampi/iTrust-v23) for simplicity. Ansible clones the iTrust repo and runs the fuzzer, commit-and-push, after which a Jenkins build is fired.
+- We have kept fuzzer.js in the [iTrust repository](https://github.ncsu.edu/zsthampi/iTrust-v23) for simplicity. The Ansible script clones the iTrust repo and runs the fuzzer, commit-and-push, after which a Jenkins build is fired. We have used SSH for authentication. We generated the keys manually, and placed the public key in the GitHub repo before running the playbook.
 
 ### USELESS TEST DETECTOR
 
