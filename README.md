@@ -42,6 +42,13 @@ The project was easy to split up, since each part could be developed individuall
     + In Strings, replace all chars with 'z's
 - We have kept fuzzer.js in the [iTrust repository](https://github.ncsu.edu/zsthampi/iTrust-v23) for simplicity. Ansible clones the iTrust repo and runs the fuzzer, commit-and-push, after which a Jenkins build is fired.
 
+### USELESS TEST DETECTOR
+
+We used a python script to detect useless tests.</br>
+The script uses the junit xml report generated for each build. It parses through the scipt and checks the 'failed' and 'skipped' status for each test case. </br>
+- To parse the xml files use: `python test.py checktest`
+- To display the results of useless tests use: `python test.py uselesstest`
+
 ### ANALYSIS COMPONENTS 
 
 We extended the code from HW2 to create an analysis component using JS and Esprima. </br>
