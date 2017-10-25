@@ -45,7 +45,7 @@ The project was easy to split up, since each part could be developed individuall
 ### USELESS TEST DETECTOR
 
 We used a python script to detect useless tests.</br>
-The script uses the junit xml report generated for each build. It parses through the scipt and checks the 'failed' and 'skipped' status for each test case. </br>
+The script uses the junit xml report generated for each build. It parses through the file and checks the 'failed' and 'skipped' status for each test case. </br>
 - To parse the xml files use: `python test.py checktest`
 - To display the results of useless tests use: `python test.py uselesstest`
 
