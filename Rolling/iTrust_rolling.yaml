@@ -1,0 +1,73 @@
+- hosts: all
+  serial: 1
+  tasks:
+
+    - name: Check if git repo exists
+      stat: path=/home/meghav/iTrust-v23
+      register: git_exists
+      
+    - name: remove git 
+      shell: cd /home/meghav/ ; rm -rf iTrust-v23
+      when: git_exists.stat.exists
+      become: yes
+
+    - name: git clone
+      command: git clone git@github.ncsu.edu:mpdesai/iTrust-v23.git
+      args:
+        chdir: /home/meghav
+      become: no
+
+
+
+#    - name: clone iTrust repo
+#      git:
+#        repo: git@github.ncsu.edu:mpdesai/iTrust-v23.git
+#        dest: "/home/meghav"
+#        accept_hostkey: yes
+#        force: yes
+#        update: yes
+#        version: master
+#      become: yes
+#    - unarchive:
+#        src: /home/meghav/mysql-connector-java-5.1.44.tar.gz
+#        dest: /root/
+#        remote_src: True
+#      become: yes
+
+    - name: clean
+      command: mvn clean
+      args:
+        chdir: /home/meghav/iTrust-v23/iTrust/
+      become: yes
+
+    - name: compile
+      command: mvn compile
+      args:
+        chdir: /home/meghav/iTrust-v23/iTrust/
+      become: yes
+
+    - name: generating war files
+      command: mvn package -DskipTests
+      args:
+        chdir: /home/meghav/iTrust-v23/iTrust/
+      become: yes
+        
+    - name: Rename files for enabling CSS
+      shell: cd /home/meghav/iTrust-v23/iTrust/target/; mv iTrust-23.0.0.war iTrust.war
+      become: yes
+
+    - name: moving the war files
+      copy:
+        src: /home/meghav/iTrust-v23/iTrust/target/iTrust.war
+        dest: /home/meghav/apache-tomcat-8.5.23/webapps/
+        remote_src: True
+      become: yes
+
+    - name: start
+      shell: cd /home/meghav/apache-tomcat-8.5.23/bin/; ./catalina.sh stop ; ./catalina.sh start
+      become: yes
+
+  handlers:
+    - name: restart mysql
+      service: name=mysql state=restarted
+      become: yes

@@ -1,0 +1,128 @@
+---
+- hosts: localhost
+  become: yes
+  vars:
+    packages:
+      - gcc
+      - git
+      - git-core
+      - oracle-java8-installer
+      - oracle-java8-set-default
+      - maven
+      - mysql-server
+      - python-software-properties
+
+  tasks:
+
+    - name: Key
+      shell: sudo add-apt-repository -y ppa:webupd8team/java; echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections; echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
+      become: yes
+      become_method: sudo
+
+    - name: Jenkins Key
+      shell: wget -q -O - https://pkg.jenkins.io/debian/jenkins-ci.org.key | sudo apt-key add -
+
+    - name: Create Files for Jenkins
+      shell: sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+
+    - name: Updating apt-get cache
+      apt:
+        update_cache: yes
+      become: yes
+      become_method: sudo
+
+    - name: Install Required packages
+      apt: name="{{item}}" state=present
+      with_items: "{{ packages}}"
+      become: yes
+      become_method: sudo
+
+    - name: Install Jenkins
+      apt: name="jenkins" state=present
+      become: yes
+
+    - name: remove case sensitivity in mysql
+      blockinfile:
+        dest: /etc/mysql/my.cnf
+        block: |
+          [mysqld]
+          lower_case_table_names = 1
+      register: mysql_case_sensitivity
+      become: yes
+
+    - name: update plugin value on mysql root user
+      shell: >
+        mysql -u root --execute "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root'; FLUSH PRIVILEGES;"
+      become: yes
+
+    - name: Restart mysql
+      service:
+        name: mysql
+        state: restarted
+      become: yes
+      become_method: sudo
+
+    - copy:
+        src: /root/jenkins.xml
+        dest: /var/lib/jenkins/config.xml
+        owner: jenkins
+        group: jenkins
+        mode: 0777
+      become: yes
+      become_method: sudo
+
+    - name: Create iTrust directory
+      file:
+        path: /var/lib/jenkins/jobs/iTrust
+        state: directory
+        mode: 0777
+
+    - copy:
+        src: /root/job.xml
+        dest: /var/lib/jenkins/jobs/iTrust/config.xml
+        owner: jenkins
+        group: jenkins
+        mode: 0777
+      become: yes
+      become_method: sudo
+    
+    - name: Create iTrust workspace
+      file:
+        path: /var/lib/jenkins/workspace
+        state: directory
+        mode: 0777
+
+    - name: copy repo
+      copy:
+        src: /root/iTrust-v23 
+        dest: "/var/lib/jenkins/workspace/iTrust/"
+      become: yes      
+
+    - name: Set Ownership
+      shell: chown -R jenkins:jenkins /var/lib/jenkins/workspace/iTrust/
+      become: yes
+      become_method: sudo
+
+    - name: Restart jenkins
+      service:
+        name: jenkins
+        state: restarted
+      become: yes
+      become_method: sudo
+
+    - wait_for:
+        timeout: 60
+
+    - name: Jenkins-cli
+      shell: cd /var/lib/jenkins/; wget localhost:8080/jnlpJars/jenkins-cli.jar; chown jenkins /var/lib/jenkins/jenkins-cli.jar; chmod 777 /var/lib/jenkins/jenkins-cli.jar
+      become: yes
+      become_method: sudo
+
+    - name: Restart jenkins
+      service:
+        name: jenkins
+        state: restarted
+      become: yes
+      become_method: sudo
+
+
