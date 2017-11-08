@@ -1,0 +1,50 @@
+- name: Update all packages
+  apt:
+    update_cache: yes
+    upgrade: dist
+
+- name: Add source key for nodejs
+  apt_key:
+    url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
+    state: present
+  register: first_run
+
+- name: Add source repo for nodejs
+  apt_repository:
+    repo: "deb https://deb.nodesource.com/node_8.x xenial main"
+    state: present
+  update_cache: yes    
+
+- name: Install packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - nodejs
+    - python3-pip
+    - redis-server
+
+- name: Start Redis server 
+  shell: redis-server --daemonize yes
+
+- name: Copy load balancer node scripts
+  copy:
+    src: ./load_balancer/load_balancer.js
+    dest: /home/ubuntu/load_balancer
+    force: yes
+
+- name: Copy load balancer node scripts
+  copy:
+    src: ./load_balancer/package.json
+    dest: /home/ubuntu/load_balancer
+    force: yes
+
+- name: npm install
+  shell: npm install
+  args:
+    chdir: /home/ubuntu/load_balancer
+
+- name: start node server
+  shell: ./node_modules/forever/bin/forever start load_balancer.js
+  args:
+    chdir: /home/ubuntu/load_balancer

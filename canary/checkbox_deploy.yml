@@ -9,6 +9,14 @@
       file: password.yml
       name: vault
 
+  - name: set variables and provision load_balancer
+    set_fact:
+      hostname: load_balancer
+      key_file_path: "~/.ssh/{{ vault['aws_key_name']}}.pem"
+      py_path: /usr/bin/python3
+
+  - import_tasks: create_ec2.yaml
+
   - name: set variables
     set_fact:
       hostname: checkbox
@@ -16,7 +24,22 @@
       py_path: /usr/bin/python3
 
   - import_tasks: create_ec2.yaml
-  # - import_tasks: create_ec2.yaml
+
+  - name: add host to redis
+  shell: node load_balancer/add_key.js "{{ redis_host }}" "{{ host_ip }}"
+
+  - import_tasks: create_ec2.yaml
+
+  - name: add host to redis
+  shell: node load_balancer/add_key.js "{{ redis_host }}" "{{ host_ip }}"
+
+- hosts: load_balancer
+  gather_facts: no
+  become: yes
+
+  tasks:
+
+  - import_tasks: load_balancer.yml
 
 - hosts: checkbox
   gather_facts: no

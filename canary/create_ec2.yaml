@@ -25,6 +25,16 @@
     ansible_python_interpreter: "{{ py_path }}"
     host_key_checking: False
 
+- name: set redis host
+  set_fact:
+    redis_host: "{{ ec2.instances[0].public_ip }}"
+  when: "{{ hostname }}" == "load_balancer"
+
+- name: set host ip
+  set_fact:
+    host_ip: "{{ ec2.instances[0].public_ip }}"
+  when: "{{ hostname }}" == "checkbox"
+
 - name: Wait for ec2 instance to bootup
   wait_for: 
     host: "{{ ec2.instances[0].public_ip }}" 
