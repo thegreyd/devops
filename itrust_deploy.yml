@@ -167,7 +167,7 @@
   - name: copy iTrust WAR file to tomcat webapps folder
     copy:
       src: "{{ home }}/development/iTrust-v23/iTrust/target/iTrust-23.0.0.war"
-      dest: "{{ home }}/development/apache-tomcat-9.0.0.M26/webapps/"
+      dest: "{{ home }}/development/apache-tomcat-9.0.0.M26/webapps/iTrust.war"
       remote_src: yes
     failed_when: war.stat.exists == False
     when: war.stat.exists == True
