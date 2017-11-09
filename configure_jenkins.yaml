@@ -16,7 +16,7 @@
 
 - name: configure default users
   template:
-    src: basic-security.groovy
+    src: basic-security.groovy.j2
     dest: /var/lib/jenkins/init.groovy.d/basic-security.groovy
     owner: jenkins
     group: jenkins
@@ -49,9 +49,8 @@
     name: "{{ item }}"
     state: present
     timeout: 60
-    params:
-      url_username: "{{ vault['jenkins_user'] }}"
-      url_password: "{{ vault['jenkins_pass'] }}"
+    url_username: "{{ vault['jenkins_user'] }}"
+    url_password: "{{ vault['jenkins_pass'] }}"
   with_items:
     - workflow-aggregator
     - github-branch-source
