@@ -6,7 +6,10 @@
 - `jenkins.yaml` : using inventory
     + setup jenkins server
     + add checkbox and itrust jobs
-    + trigger checkbox and itrust builds (and deploy)
+    + trigger checkbox and itrust builds (and deploy) on first setup
+    + builds and deploys are automatically triggered when repos are pushed to
+
+## More
 - `checkbox_deploy.yml` : using inventory, deploys checkbox. Automatically run by jenkins.
 - `itrust_deploy.yml` : using inventory, deploys itrust. Automatically run by jenkins.
 - `vars/password.yml` : ansible vault file with all credentials
