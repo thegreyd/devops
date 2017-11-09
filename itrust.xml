@@ -8,7 +8,7 @@
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
-        <url>https://github.ncsu.edu/zsthampi/iTrust-v23</url>
+        <url>https://github.ncsu.edu/ssharm24/iTrust-v23</url>
         <credentialsId>github-ncsu-auth-token</credentialsId>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
