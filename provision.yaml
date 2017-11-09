@@ -71,6 +71,7 @@
       jenkins_ip: "{{ jenkins_ec2.instances[0].public_ip }}"
       itrust_ip: "{{ itrust_ec2.instances[0].public_ip }}"
       checkbox_ip: "{{ checkbox_ec2.instances[0].public_ip }}"
+      jenkins_playbook_dir: /var/lib/jenkins
     template:
       src: inventory.j2
       dest: "{{ playbook_dir }}/inventory"

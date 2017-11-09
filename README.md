@@ -3,7 +3,9 @@
 - `pip install --user git+git://github.com/ansible/ansible.git@devel` install latest ansible
 - `vars/password.yml` Ansible vault file with (ec2, jenkins, mongo..) credentials
 - `~/password.txt` File with your vault password
-- Run `ansible-playbook main.yml --vault-password-file ~/password.txt`
+- Run:
+    + `ansible-playbook provision.yaml --vault-password-file ~/password.txt`
+    + `ansible-playbook jenkins.yaml -i inventory --vault-password-file ~/password.txt`
 
 ## Check
 - `ip:8080` access jenkins

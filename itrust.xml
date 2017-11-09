@@ -34,7 +34,7 @@ cd iTrust
 mvn compile</command>
     </hudson.tasks.Shell>
     <hudson.tasks.Shell>
-      <command>ansible-playbook /var/lib/jenkins/itrust_deploy.yml --vault-password-file /var/lib/jenkins/password.txt</command>
+      <command>ansible-playbook /var/lib/jenkins/itrust_deploy.yml -i /var/lib/jenkins/inventory --vault-password-file /var/lib/jenkins/password.txt</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
