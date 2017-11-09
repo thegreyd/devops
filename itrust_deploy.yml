@@ -59,7 +59,7 @@
 
   - name: download tomcat 9
     get_url:
-      url: http://www.us.apache.org/dist/tomcat/tomcat-9/v9.0.0.M26/bin/apache-tomcat-9.0.0.M26.tar.gz
+      url: https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.0.M26/bin/apache-tomcat-9.0.0.M26.tar.gz
       dest: "{{ home }}/development"
     when: tomcat.stat.exists == False
 
