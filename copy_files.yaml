@@ -8,10 +8,10 @@
     src: ~/password.txt
     dest: /var/lib/jenkins/password.txt
 
-- name: Copy hosts.yml
+- name: Copy inventory
   copy:
-    src: "{{ playbook_dir }}/vars/hosts.yml"
-    dest: /var/lib/jenkins/hosts.yml
+    src: "{{ playbook_dir }}/inventory"
+    dest: /var/lib/jenkins/inventory
 
 - name: Copy Checkbox deployment playbook
   copy:

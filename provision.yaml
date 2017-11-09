@@ -9,6 +9,13 @@
       file: password.yml
       name: vault
 
+  - name: Create pem file
+    copy:
+      content: "{{ vault['aws_key']}}"
+      dest: "{{ playbook_dir }}/{{ vault['aws_key_name']}}.pem"
+      force: yes
+      mode: 0400
+
   - name: Install pip dependency
     pip:
       name: boto
@@ -59,11 +66,11 @@
       assign_public_ip: yes
     register: checkbox_ec2
 
-  - name: configure host file
+  - name: configure inventory
     vars:
       jenkins_ip: "{{ jenkins_ec2.instances[0].public_ip }}"
       itrust_ip: "{{ itrust_ec2.instances[0].public_ip }}"
       checkbox_ip: "{{ checkbox_ec2.instances[0].public_ip }}"
     template:
-      src: hosts.yml.j2
-      dest: ./vars/hosts.yml
+      src: inventory.j2
+      dest: "{{ playbook_dir }}/inventory"
