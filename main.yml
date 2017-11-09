@@ -22,6 +22,11 @@
       force: yes
       mode: 0400
 
+  - name: Install pip dependency
+    pip:
+      name: boto
+      state: present
+
   - import_tasks: create_ec2.yaml   
 
 - hosts: jenkins
