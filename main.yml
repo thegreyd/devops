@@ -9,11 +9,10 @@
       file: password.yml
       name: vault
 
-  - name: set variables
-    set_fact:
-      hostname: jenkins
-      key_file_path: "{{ playbook_dir }}/{{ vault['aws_key_name']}}.pem" 
-      py_path: /usr/bin/python 
+  - name: Get vars from host
+    include_vars:
+      file: hosts.yml
+      name: ec2_hosts
 
   - name: Create pem file
     copy:
@@ -27,7 +26,22 @@
       name: boto
       state: present
 
-  - import_tasks: create_ec2.yaml   
+  - name: Add Jenkins ec2 host
+    add_host:
+      name: "{{ ec2_hosts['jenkins'] }}"
+      groups: jenkins
+      ansible_ssh_user: ubuntu
+      ansible_ssh_private_key_file: "{{ ec2_hosts['key_file_path'] }}"
+      ansible_python_interpreter: /usr/bin/python
+      host_key_checking: false
+
+  - name: Check Jenkins instance is live
+    wait_for: 
+      host: "{{ ec2_hosts['jenkins'] }}"
+      port: 22 
+      delay: 60 
+      timeout: 320 
+      state: started
 
 - hosts: jenkins
   gather_facts: no
