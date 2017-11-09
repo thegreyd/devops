@@ -10,13 +10,14 @@
 ## Check
 - `ip:8080` access jenkins
 - `ip` access checkbox
-- `ip:9090/iTrust-23.0.0` access iTrust
+- `ip:9090/iTrust` access iTrust
 
 ## Debug
-- `ssh -i <pem_file> ubuntu@ip` ssh into amazon machine
+- `ssh -i <pem_file> ubuntu@ip` ssh into ec2
 - `/var/lib/jenkins` files on jenkins server - deployment playbooks and jobs
 - `ansible-vault view <vault_file>`
 - `ansible-vault edit <vault_file>`
+- `awseducate.com/login` manage aws
 
 ## Todo
 - separate provision tasks into playbook
