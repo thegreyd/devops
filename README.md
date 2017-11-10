@@ -1,4 +1,11 @@
-## What's happening
+## Devops Milestone 3
+
+## Nomad Cluster Run
+- `ansible-playbook provision-nomad.yaml`
+- `ansible-playbook configure-control-server.yml -i inventory_nomad`
+- `ansible-playbook bootstrap-cluster.yml -i inventory_nomad`
+
+## What's what
 - `provision.yaml` : provisions 3 ec2 instances and creates an inventory file
     * jenkins: our build server for itrust and checkbox
     * itrust: deployment server for itrust
@@ -15,23 +22,23 @@
 - `vars/password.yml` : ansible vault file with all credentials
 - `~/password.txt` File with your vault password
 
-## steps
+## First Steps
 - clone repo
 - `pip install --user git+git://github.com/ansible/ansible.git@devel` install latest ansible
+
+## Jenkins Provision (Build+Deploy) Run
 - Provision `ansible-playbook provision.yaml --vault-password-file ~/password.txt`
 - Setup Jenkins `ansible-playbook jenkins.yaml -i inventory --vault-password-file ~/password.txt`
-
-## Check
-- `ip:8080` access jenkins
-- `ip` access checkbox
-- `ip:9090/iTrust` access iTrust
-
-## Debug
-- `ssh -i <pem_file> ubuntu@ip` ssh into ec2
-- `/var/lib/jenkins` files on jenkins server - deployment playbooks and jobs
-- `ansible-vault view <vault_file>`
-- `ansible-vault edit <vault_file>`
-- `awseducate.com/login` manage aws
+- Check
+    - `ip:8080` access jenkins
+    - `ip` access checkbox
+    - `ip:9090/iTrust` access iTrust
+- Debug
+    - `ssh -i <pem_file> ubuntu@ip` ssh into ec2
+    - `/var/lib/jenkins` files on jenkins server - deployment playbooks and jobs
+    - `ansible-vault view <vault_file>`
+    - `ansible-vault edit <vault_file>`
+    - `awseducate.com/login` manage aws
 
 ## Trigger Build & Deploy on Push
 Manual setup to add git hooks to build jobs.
