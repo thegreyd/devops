@@ -66,12 +66,60 @@
       assign_public_ip: yes
     register: checkbox_ec2
 
+  - name: Create nomad1 EC2 host
+    ec2:
+      aws_access_key: "{{ vault['aws_access_key'] }}"
+      aws_secret_key: "{{ vault['aws_secret_key'] }}"
+      key_name: "{{ vault['aws_key_name'] }}"
+      instance_type: t2.micro
+      image: ami-6e1a0117
+      wait: yes
+      group: webservers
+      region: us-west-2
+      vpc_subnet_id: subnet-162e6571
+      count: 1
+      assign_public_ip: yes
+    register: nomad1_ec2
+
+  - name: Create nomad2 EC2 host
+    ec2:
+      aws_access_key: "{{ vault['aws_access_key'] }}"
+      aws_secret_key: "{{ vault['aws_secret_key'] }}"
+      key_name: "{{ vault['aws_key_name'] }}"
+      instance_type: t2.micro
+      image: ami-6e1a0117
+      wait: yes
+      group: webservers
+      region: us-west-2
+      vpc_subnet_id: subnet-162e6571
+      count: 1
+      assign_public_ip: yes
+    register: nomad2_ec2
+
+  - name: Create nomad3 EC2 host
+    ec2:
+      aws_access_key: "{{ vault['aws_access_key'] }}"
+      aws_secret_key: "{{ vault['aws_secret_key'] }}"
+      key_name: "{{ vault['aws_key_name'] }}"
+      instance_type: t2.micro
+      image: ami-6e1a0117
+      wait: yes
+      group: webservers
+      region: us-west-2
+      vpc_subnet_id: subnet-162e6571
+      count: 1
+      assign_public_ip: yes
+    register: nomad3_ec2
+
   - name: configure inventory
     vars:
       jenkins_ip: "{{ jenkins_ec2.instances[0].public_ip }}"
       itrust_ip: "{{ itrust_ec2.instances[0].public_ip }}"
       checkbox_ip: "{{ checkbox_ec2.instances[0].public_ip }}"
       jenkins_playbook_dir: /var/lib/jenkins
+      nomad1_ip: "{{ nomad1_ec2.instances[0].public_ip }}"
+      nomad2_ip: "{{ nomad2_ec2.instances[0].public_ip }}"
+      nomad3_ip: "{{ nomad3_ec2.instances[0].public_ip }}"
     template:
       src: inventory.j2
       dest: "{{ playbook_dir }}/inventory"
