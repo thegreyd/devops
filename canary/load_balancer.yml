@@ -24,20 +24,47 @@
     - python3-pip
     - redis-server
 
+- name: Replace bind in redis configuration 
+  replace:
+    path: /etc/redis/redis.conf
+    regexp: 'bind 127.0.0.1'
+    replace: 'bind 0.0.0.0'
+  become: yes
+
+# - name: Start Redis server 
+#   shell: redis-server --daemonize yes
+#   # become: yes
+
 - name: Start Redis server 
-  shell: redis-server --daemonize yes
+  command: redis-server --daemonize yes
+  # become: yes
+
+- name: Start Redis server 
+  service:
+    name: redis-server
+    state: restarted
+  become: yes
 
 - name: Copy load balancer node scripts
   copy:
     src: ./load_balancer/load_balancer.js
-    dest: /home/ubuntu/load_balancer
+    dest: /home/ubuntu/load_balancer/
     force: yes
+    mode: 0777
+
+- name: Copy load balancer node scripts
+  copy:
+    src: ./load_balancer/add_key.js
+    dest: /home/ubuntu/load_balancer/
+    force: yes
+    mode: 0777
 
 - name: Copy load balancer node scripts
   copy:
     src: ./load_balancer/package.json
-    dest: /home/ubuntu/load_balancer
+    dest: /home/ubuntu/load_balancer/
     force: yes
+    mode: 0777
 
 - name: npm install
   shell: npm install

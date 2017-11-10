@@ -4,20 +4,30 @@ var app = express();
 var redis = require('redis');
 var client = redis.createClient(6379, process.argv[2], {});
 
-// client.rpush("host_list", host);
-// client.lpop("host_list", function(err,host) {})
-
 app.get('/', function(req,res) {
-	// res.redirect("http://www.google.com");
-	client.lpop("host_list", function(err,data) {
-		if (err) {
-			res.write("No host found!");
-			res.end();
+	client.get("alert", function(err,alert) {
+		if(err || !alert) {
+			if (Math.random() > 0.7) {
+				client.get("v2_host", function(err,host) {
+					res.redirect("http://"+host);
+				});
+			} else {
+				client.get("v1_host", function(err,host) {
+					res.redirect("http://"+host);
+				});
+			}
 		} else {
-			client.rpush(data);
-			res.redirect(data);
+			client.get("v1_host", function(err,host) {
+				res.redirect("http://"+host);
+			});
 		}
 	});
+});
+
+app.get('/alert', function(req,res) {
+	client.set("alert","yes");
+	res.write("Alert set");
+	res.end();
 });
 
 app.listen(7999);

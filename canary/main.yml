@@ -1,0 +1,79 @@
+---
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+
+  - name: Get credentials from vault
+    include_vars:
+      file: password.yml
+      name: vault
+
+  # Add EC2 instance for load balance
+  - name: set variables and provision load_balancer
+    set_fact:
+      hostname: load_balancer
+      key_file_path: "~/.ssh/{{ vault['aws_key_name']}}.pem"
+      py_path: /usr/bin/python3
+
+  - import_tasks: create_ec2.yml
+
+  # Add EC2 instance for v1
+  - name: set variables
+    set_fact:
+      hostname: v1
+      key_file_path: "~/.ssh/{{ vault['aws_key_name']}}.pem"
+      py_path: /usr/bin/python3
+
+  - import_tasks: create_ec2.yml
+
+  # Add EC2 instance for v2 
+  - name: set variables
+    set_fact:
+      hostname: v2
+      key_file_path: "~/.ssh/{{ vault['aws_key_name']}}.pem"
+      py_path: /usr/bin/python3
+
+  - import_tasks: create_ec2.yml
+
+- hosts: load_balancer
+  gather_facts: no
+  become: yes
+
+  tasks:
+
+  - import_tasks: load_balancer.yml
+
+  - name: add host to redis
+    # shell: node load_balancer/add_key.js "{{ redis_host }}" v1_host "{{ v1_host }}"
+    shell: "node load_balancer/add_key.js {{ hostvars['localhost']['redis_host'] }} v1_host {{ hostvars['localhost']['v1_host'] }}"   
+
+  - name: debug
+    debug:
+      msg: "node load_balancer/add_key.js {{ hostvars['localhost']['redis_host'] }} v1_host {{ hostvars['localhost']['v1_host'] }}"   
+
+  - name: add host to redis
+    # shell: node load_balancer/add_key.js "{{ redis_host }}" v2_host "{{ v2_host }}"
+    shell: "node load_balancer/add_key.js {{ hostvars['localhost']['redis_host'] }} v2_host {{ hostvars['localhost']['v2_host'] }}"
+
+  - name: debug
+    debug:
+      msg: "node load_balancer/add_key.js {{ hostvars['localhost']['redis_host'] }} v2_host {{ hostvars['localhost']['v2_host'] }}"
+
+- hosts: v1
+  gather_facts: no
+  become: yes
+
+  tasks:
+
+  - import_tasks: checkbox_deploy_v1.yml
+
+- hosts: v2
+  gather_facts: no
+  become: yes
+
+  tasks:
+
+  - import_tasks: checkbox_deploy_v2.yml
+
+...

@@ -28,12 +28,17 @@
 - name: set redis host
   set_fact:
     redis_host: "{{ ec2.instances[0].public_ip }}"
-  when: "{{ hostname }}" == "load_balancer"
+  when: hostname == "load_balancer"
 
-- name: set host ip
+- name: set host for v1
   set_fact:
-    host_ip: "{{ ec2.instances[0].public_ip }}"
-  when: "{{ hostname }}" == "checkbox"
+    v1_host: "{{ ec2.instances[0].public_ip }}"
+  when: hostname == "v1"
+
+- name: set host for v2
+  set_fact:
+    v2_host: "{{ ec2.instances[0].public_ip }}"
+  when: hostname == "v2"
 
 - name: Wait for ec2 instance to bootup
   wait_for: 

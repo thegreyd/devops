@@ -1,0 +1,15 @@
+---
+- hosts: all
+  tasks:
+
+  - name: Replace bind in redis configuration 
+    replace:
+      path: /etc/redis/redis.conf
+      regexp: 'bind 127.0.0.1'
+      replace: 'bind 0.0.0.0'
+    become: yes
+  
+  - name: Start Redis server 
+    command: redis-server --daemonize yes
+    # become: yes
+...
