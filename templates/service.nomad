@@ -1,19 +1,23 @@
-job "NodeJS_Counter" {
-  datacenters = [ "dc1" ]
-  group "default" {
-    count = 1
-    task "count" {
-      driver = "docker"
-      resources {
-        memory = 512
-      }
+job "server" {
+  datacenters = ["dc1"]
+  group "example" {
+    task "server" {
+      driver = "exec"
+
       config {
-        image = "node:8"
-        command = "node"
+        command = "/usr/bin/node"
         args = [
-          "--eval",
-          "let x = 0; setInterval(() => console.log(++x), 1000);"
-        ]
+          "service.js", 
+          ]
+      }
+
+      resources {
+        network {
+          mbits = 10
+          port "http" {
+            static = "5678"
+          }
+        }
       }
     }
   }
