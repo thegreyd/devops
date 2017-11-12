@@ -1,0 +1,8 @@
+[all]
+
+node1 ansible_ssh_host=13.92.241.48  ansible_ssh_user=meghav
+node2 ansible_ssh_host=13.92.247.168 ansible_ssh_user=meghav
+node3 ansible_ssh_host=13.92.240.125 ansible_ssh_user=meghav
+node4 ansible_ssh_host=51.141.26.60  ansible_ssh_user=meghav
+node5 ansible_ssh_host=52.237.35.1   ansible_ssh_user=meghav
+
