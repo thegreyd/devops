@@ -1,2 +1,34 @@
 # csc_519_devops
 Repo for CSC 519 - DevOps
+
+[Canary Screencast](https://youtu.be/WTktuxFEHDk)
+
+## CANARY RELEASE
+```
+All the ansible scripts and code for Canary release are contained in the canary folder. 
+The ansible scripts do the following 
+1. Provision an EC2 instance, to act as a load balancer. 
+The load balancer code is included in canary/load_balancer folder 
+2. Provision an EC2 instance, which acts as the production instance. 
+(The github repo for the production instance is configured in checkbox_deploy_v1.yml) 
+3. Provision an EC2 instance, which acts as the new version. 
+(The github repo for the new version is configured in checkbox_deploy_v2.yml). 
+In the demo, I'm using the same repository, but a different branch called v2. 
+
+The load balancer is a node app, which routes traffic 30% of the time to the new version, 
+and rest of the time to the production version. 
+
+The load balancer also has a route called /alert, which can be called by the new version, 
+based on any metric that it is monitoring. 
+We can also have an additional monitor script, 
+which checks the status of the servers in the new version. 
+For the demo, I call the route directly, 
+and show that the app then routes completely to the production instance alone. 
+
+The ratio of trafffic between production, 
+and new instance can be easily altered by altering the load balancer code. 
+It can even be passed as an attribute (or as a separate route). 
+But this was not part of the milestone requirements. 
+
+Internally, I use a redis server to store the alert flag. 
+```

@@ -1,0 +1,52 @@
+- name: Create a new EC2 host
+  ec2:
+    aws_access_key: "{{ vault['aws_access_key'] }}"
+    aws_secret_key: "{{ vault['aws_secret_key'] }}"
+    key_name: "{{ vault['aws_key_name'] }}"
+    instance_type: t2.micro
+    image: ami-6e1a0117
+    wait: yes
+    group: webservers
+    region: us-west-2
+    # vpc_subnet_id: subnet-162e6571
+    count: 1
+    # assign_public_ip: yes
+  register: ec2
+
+- debug:
+    var: ec2.instances[0].public_ip
+
+- name: add ec2 host
+  add_host:
+    name: "{{ ec2.instances[0].public_ip }}"
+    groups: "{{ hostname }}"
+    ansible_ssh_user: ubuntu
+    ansible_ssh_private_key_file: "{{ key_file_path }}"
+    ansible_python_interpreter: "{{ py_path }}"
+    host_key_checking: False
+
+- name: set redis host
+  set_fact:
+    redis_host: "{{ ec2.instances[0].public_ip }}"
+  when: hostname == "load_balancer"
+
+- name: set host for v1
+  set_fact:
+    v1_host: "{{ ec2.instances[0].public_ip }}"
+  when: hostname == "v1"
+
+- name: set host for v2
+  set_fact:
+    v2_host: "{{ ec2.instances[0].public_ip }}"
+  when: hostname == "v2"
+
+- name: Wait for ec2 instance to bootup
+  wait_for: 
+    host: "{{ ec2.instances[0].public_ip }}" 
+    port: 22 
+    delay: 60 
+    timeout: 320 
+    state: started
+
+- name: accept new ssh fingerprints                                         
+  shell: ssh-keyscan -H {{ ec2.instances[0].public_ip }} >> ~/.ssh/known_hosts
