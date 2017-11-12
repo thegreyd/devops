@@ -15,6 +15,8 @@ The load balancer code is included in canary/load_balancer folder
 (The github repo for the new version is configured in checkbox_deploy_v2.yml). 
 In the demo, I'm using the same repository, but a different branch called v2. 
 
+Both v1 and v2 point to the same database (which is hosted on v1 host) 
+
 The load balancer is a node app, which routes traffic 30% of the time to the new version, 
 and rest of the time to the production version. 
 
