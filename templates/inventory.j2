@@ -9,11 +9,12 @@
 
 [nodes]
 nomad1 ansible_user=ubuntu ansible_ssh_private_key_file="{{ playbook_dir }}/{{ vault['aws_key_name']}}.pem" host_key_checking=false nomad_node_role=server nomad_iface=eth0 consul_node_role=bootstrap consul_iface=eth0 consul_client_address={{ nomad1_ip }} ansible_host={{ nomad1_ip }}
-nomad2 ansible_user=ubuntu ansible_ssh_private_key_file="{{ playbook_dir }}/{{ vault['aws_key_name']}}.pem" host_key_checking=false nomad_node_role=client nomad_iface=eth0 consul_node_role=bootstrap consul_iface=eth0 consul_client_address={{ nomad2_ip }} ansible_host={{ nomad2_ip }}
-nomad3 ansible_user=ubuntu ansible_ssh_private_key_file="{{ playbook_dir }}/{{ vault['aws_key_name']}}.pem" host_key_checking=false nomad_node_role=client nomad_iface=eth0 consul_node_role=bootstrap consul_iface=eth0 consul_client_address={{ nomad3_ip }} ansible_host={{ nomad3_ip }}
+nomad2 ansible_user=ubuntu ansible_ssh_private_key_file="{{ playbook_dir }}/{{ vault['aws_key_name']}}.pem" host_key_checking=false nomad_node_role=client nomad_iface=eth0 consul_node_role=client consul_iface=eth0 consul_client_address={{ nomad2_ip }} ansible_host={{ nomad2_ip }}
+nomad3 ansible_user=ubuntu ansible_ssh_private_key_file="{{ playbook_dir }}/{{ vault['aws_key_name']}}.pem" host_key_checking=false nomad_node_role=client nomad_iface=eth0 consul_node_role=client consul_iface=eth0 consul_client_address={{ nomad3_ip }} ansible_host={{ nomad3_ip }}
 
 [nomad_instances]
 [nomad_instances:children]
+nodes
 
 [consul_instances]
 [consul_instances:children]
