@@ -2,6 +2,7 @@
 Repo for CSC 519 - DevOps
 
 [Canary Screencast](https://youtu.be/WTktuxFEHDk)
+[Rolling Screencast](https://youtu.be/zt511jRmMhs)
 
 ## CANARY RELEASE
 ```
@@ -34,3 +35,15 @@ But this was not part of the milestone requirements.
 
 Internally, I use a redis server to store the alert flag. 
 ```
+## Rolling Update
+```
+All the ansible scripts and code for Canary release are contained in the Rolling folder.
+The ansible scripts do the following
+
+1. Configure and install jenkins
+2. Build jobs for iTrust
+3. Script to provision iTrust on production servers
+4. Script to redeploy iTrust on a git push
+
+Microsoft azure is used for deploying production servers. Sql database of instance one is shared by all the 5 iTrust instances.
+
