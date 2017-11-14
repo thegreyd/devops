@@ -46,4 +46,4 @@ The ansible scripts do the following
 4. Script to redeploy iTrust on a git push
 
 Microsoft azure is used for deploying production servers. Sql database of instance one is shared by all the 5 iTrust instances.
-
+'''
