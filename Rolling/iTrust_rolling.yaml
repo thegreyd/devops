@@ -17,6 +17,15 @@
         chdir: /home/meghav
       become: no
 
+    - copy:
+        src: /home/mpdesai/context.xml
+        dest: /home/meghav/iTrust-v23/iTrust/WebRoot/META-INF
+        owner: mpdesai
+        group: mpdesai
+        mode: 0664
+      become: yes
+      become_method: sudo
+
 
 
 #    - name: clone iTrust repo
