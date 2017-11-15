@@ -1,0 +1,34 @@
+---
+- hosts: localhost
+  tasks:
+
+  - name: set redis host
+    set_fact:
+      redis_host: "34.214.48.115"
+
+- hosts: all
+  tasks:
+
+  # - name: Replace bind in redis configuration 
+  #   replace:
+  #     path: /etc/redis/redis.conf
+  #     regexp: 'bind 127.0.0.1'
+  #     replace: 'bind 0.0.0.0'
+  #   become: yes
+  
+  # - name: Start Redis server 
+  #   command: redis-server --daemonize yes
+  #   # become: yes
+
+  - name: Replace bind in redis configuration 
+    replace:
+      path: /etc/redis/redis.conf
+      regexp: '# slaveof <masterip> <masterport>'
+      replace: 'slaveof {{ hostvars["localhost"]["redis_host"] }} 6379'
+    become: yes
+
+
+  - name: Start Redis server 
+    command: "redis-server /etc/redis/redis.conf --daemonize yes"
+    become: yes
+...
