@@ -4,7 +4,7 @@ Repo for CSC 519 - DevOps
 # Milestone 3 Deployment Pipeline
 
 ## Screencasts
-- Deployment
+- [Deployment Pipeline](https://youtu.be/kcN8ciJH8ds)
 - Nomad
 - [Redis Feature Flag](https://youtu.be/g3hLF5k6qgA)
 - [Canary](https://youtu.be/WTktuxFEHDk)
