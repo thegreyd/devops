@@ -4,6 +4,19 @@ Repo for CSC 519 - DevOps
 [Canary Screencast](https://youtu.be/WTktuxFEHDk)
 [Rolling Screencast](https://youtu.be/zt511jRmMhs)
 
+## INFRASTRUCTURE UPGRADE 
+### REDIS FEATURE FLAG SERVER
+
+``` In this part we have created one redis-master and two redis-slaves to demonstrate. Two servers constantly get the changed key values from the master. 
+
+The feature that we are demoing is a new route that we have created -> <host_ip>:3002/getPic
+
+When our "key1" is set to 1 - a picture will be displayed and when set to 0 - NULL will be displayed.
+
+[Redis Feature Screencast]()
+
+
+```
 ## CANARY RELEASE
 ```
 All the ansible scripts and code for Canary release are contained in the canary folder. 
