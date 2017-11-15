@@ -5,7 +5,7 @@ Repo for CSC 519 - DevOps
 
 [Rolling Screencast](https://youtu.be/zt511jRmMhs)
 
-[Redis Feature Flag Screencast]()
+[Redis Feature Flag Screencast](https://youtu.be/g3hLF5k6qgA)
 
 ## Team
 - Zubin Thampi (zsthampi) 
