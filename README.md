@@ -2,8 +2,11 @@
 Repo for CSC 519 - DevOps
 
 [Canary Screencast](https://youtu.be/WTktuxFEHDk)
+
 [Rolling Screencast](https://youtu.be/zt511jRmMhs)
+
 [Redis Feature Flag Screencast]()
+
 
 ## INFRASTRUCTURE UPGRADE 
 ### REDIS FEATURE FLAG SERVER FOR CHECKBOX.IO
