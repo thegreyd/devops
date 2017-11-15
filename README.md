@@ -19,6 +19,8 @@ When our "key1" is set to 1 - a picture will be displayed and when set to 0 - NU
 
 Slaves would not be able to SET keys, only a master can GET/SET both, but the 2 slaves would be getting values of key as they change via master.
 
+Change has been made in the server.js for adding a route and this is done in our main checkbox.io repo itself. 
+
 
 
 
