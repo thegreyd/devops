@@ -1,0 +1,75 @@
+---
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+
+  - name: create cloud formation
+    cloudformation:
+      aws_access_key: AKIAJU3YOLUAOZTVXXNQ
+      aws_secret_key: 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
+      stack_name: "ansiblenomad1"
+      state: "present"
+      # region: "us-east-2"
+      region: "us-west-2"
+      disable_rollback: true
+      template: "quickstart-hashicorp-nomad-master.template"
+      tags:
+        Stack: "ansiblenomad1"
+    register: nomad
+
+  # - name: print output
+  #   debug:
+  #     msg: "{{ nomad.stack_resources }}"
+
+  # - name: print output
+  #   debug:
+  #     msg: "{{ nomad.stack_outputs }}"
+
+  # - name: print output
+  #   debug:
+  #     msg: "{{ nomad.events }}"
+
+  # - name: print output
+  #   debug:
+  #     msg: "{{ nomad.log }}"
+
+  # - name: facts
+  #   cloudformation_facts:
+  #     all_facts: yes
+  #     aws_access_key: AKIAJU3YOLUAOZTVXXNQ
+  #     aws_secret_key: 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
+  #     region: "us-west-2"
+  #     stack_name: ansiblenomad1
+  #   register: output
+
+  # - name: print
+  #   debug:
+  #     msg: "{{ output }}"
+
+  # - name: remote facts
+  #   ec2_remote_facts:
+  #     region: "us-west-2"
+  #     aws_access_key: AKIAJU3YOLUAOZTVXXNQ
+  #     aws_secret_key: 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
+  #     filters:
+  #       instance-id: i-09367f4ea3ad39cb5
+  #   register: output
+
+  - name: remote facts
+    ec2_remote_facts:
+      region: "us-west-2"
+      aws_access_key: AKIAJU3YOLUAOZTVXXNQ
+      aws_secret_key: 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
+      filters:
+        # instance-id: i-09367f4ea3ad39cb5
+        # physical_resource_id: arn:aws:cloudformation:us-west-2:534601849893:stack/ansiblenomad1-VPCStack-1GWW44X41ATUD/66cdf580-c9ca-11e7-ac7b-503ac9316829
+        # "tag:Name": "LinuxBastion"
+        # "tag:aws:cloudformation:stack-name": "ansiblenomad1-HashiCorpNomadStack-1WCWQIPUB4IBS"
+        "tag:Stack": "ansiblenomad1"
+    register: output
+
+  - name: print
+    debug:
+      msg: "{{ output }}"
+...
