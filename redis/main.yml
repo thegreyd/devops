@@ -1,0 +1,99 @@
+---
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+
+  - name: Get credentials from vault
+    include_vars:
+      file: password.yml
+      name: vault
+
+  # Add EC2 instance for redis server 
+  - name: set variables and provision redis_server
+    set_fact:
+      hostname: redis_server
+      key_file_path: "~/.ssh/{{ vault['aws_key_name']}}.pem"
+      py_path: /usr/bin/python3
+
+  - import_tasks: create_ec2.yml
+
+  # Add EC2 instance for v1
+  - name: set variables
+    set_fact:
+      hostname: slave
+      key_file_path: "~/.ssh/{{ vault['aws_key_name']}}.pem"
+      py_path: /usr/bin/python3
+
+  - import_tasks: create_ec2.yml
+
+  # Add EC2 instance for v2 
+  - name: set variables
+    set_fact:
+      hostname: slave
+      key_file_path: "~/.ssh/{{ vault['aws_key_name']}}.pem"
+      py_path: /usr/bin/python3
+
+  - import_tasks: create_ec2.yml
+
+- hosts: redis_server
+  gather_facts: no
+  become: yes
+
+  tasks:
+
+  - import_tasks: checkbox_deploy.yml
+
+  # - name: add host to redis
+  #   # shell: node load_balancer/add_key.js "{{ redis_host }}" v1_host "{{ v1_host }}"
+  #   shell: "node load_balancer/add_key.js {{ hostvars['localhost']['redis_host'] }} v1_host {{ hostvars['localhost']['v1_host'] }}"   
+
+  # - name: debug
+  #   debug:
+  #     msg: "node load_balancer/add_key.js {{ hostvars['localhost']['redis_host'] }} v1_host {{ hostvars['localhost']['v1_host'] }}"   
+
+  # - name: add host to redis
+  #   # shell: node load_balancer/add_key.js "{{ redis_host }}" v2_host "{{ v2_host }}"
+  #   shell: "node load_balancer/add_key.js {{ hostvars['localhost']['redis_host'] }} v2_host {{ hostvars['localhost']['v2_host'] }}"
+
+  # - name: debug
+  #   debug:
+  #     msg: "node load_balancer/add_key.js {{ hostvars['localhost']['redis_host'] }} v2_host {{ hostvars['localhost']['v2_host'] }}"
+
+  - name: Stop Redis server 
+    service:
+      name: redis-server
+      state: stopped
+    become: yes
+
+  - name: Start Redis server 
+    command: redis-server --daemonize yes
+  # become: yes
+
+- hosts: slave
+  gather_facts: no
+  become: yes
+
+  tasks:
+
+  - import_tasks: checkbox_deploy.yml
+
+  - name: Stop Redis server 
+    service:
+      name: redis-server
+      state: stopped
+    become: yes
+
+  - name: Replace bind in redis configuration 
+    replace:
+      path: /etc/redis/redis.conf
+      regexp: '# slaveof <masterip> <masterport>'
+      replace: 'slaveof {{ hostvars["localhost"]["redis_host"] }} 6379'
+    become: yes
+
+
+  - name: Start Redis server 
+    command: "redis-server /etc/redis/redis.conf --daemonize yes"
+    become: yes
+
+...
