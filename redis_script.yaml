@@ -1,0 +1,118 @@
+---
+- hosts: localhost
+  gather_facts: no
+  become: yes
+
+  tasks:
+
+  - name: Get credentials from vault
+    include_vars:
+      file: password.yml
+      name: vault
+
+  - name: Create pem file
+    copy:
+      content: "{{ vault['aws_newkey']}}"
+      dest: "{{ playbook_dir }}/{{ vault['aws_key_name']}}.pem"
+      force: yes
+      mode: 0400
+
+  - name: Install pip dependency
+    pip:
+      name: boto
+      state: present
+  
+  - name: Create Redis_master EC2 host running checkbox.io
+    ec2:
+      aws_access_key: "{{ vault['aws_access_key'] }}"
+      aws_secret_key: "{{ vault['aws_secret_key'] }}"
+      key_name: "{{ vault['aws_key_name'] }}"
+      instance_type: t2.micro
+      image: ami-6e1a0117
+      wait: yes
+      group: webservers
+      region: us-west-2
+     # vpc_subnet_id: subnet-15a2e173
+      count: 1
+     # assign_public_ip: yes
+    register: ec2
+
+  - name: accept new ssh fingerprints
+    shell: ssh-keyscan -H {{ ec2.instances[0].public_ip }} >> ~/.ssh/known_hosts
+
+  - name: add ec2 host
+    add_host:
+      name: "{{ ec2.instances[0].public_ip }}"
+      groups: redis_master
+      ansible_ssh_user: ubuntu
+      ansible_ssh_private_key_file:  "{{ playbook_dir }}/{{ vault['aws_key_name']}}.pem"
+      host_key_checking: False
+      
+  - name: Create Redis slave-1 EC2 host running checkbox.io
+    ec2:
+      aws_access_key: "{{ vault['aws_access_key'] }}"
+      aws_secret_key: "{{ vault['aws_secret_key'] }}"
+      key_name: "{{ vault['aws_key_name'] }}"
+      instance_type: t2.micro
+      image: ami-6e1a0117
+      wait: yes
+      group: webservers
+      region: us-west-2
+     # vpc_subnet_id: subnet-162e6571
+      count: 1
+     # assign_public_ip: yes
+    register: s1
+
+  - name: accept new ssh fingerprints
+    shell: ssh-keyscan -H {{ s1.instances[0].public_ip }} >> ~/.ssh/known_hosts
+
+  - name: add ec2 host
+    add_host:
+      name: "{{ s1.instances[0].public_ip }}"
+      groups: redis_slaves
+      ansible_ssh_user: ubuntu
+      ansible_ssh_private_key_file:  "{{ playbook_dir }}/{{ vault['aws_key_name']}}.pem"
+      host_key_checking: False
+      
+  - name: Create Redis slave-2 EC2 host running checkbox.io
+    ec2:
+      aws_access_key: "{{ vault['aws_access_key'] }}"
+      aws_secret_key: "{{ vault['aws_secret_key'] }}"
+      key_name: "{{ vault['aws_key_name'] }}"
+      instance_type: t2.micro
+      image: ami-6e1a0117
+      wait: yes
+      group: webservers
+      region: us-west-2
+     # vpc_subnet_id: subnet-162e6571
+      count: 1
+     # assign_public_ip: yes
+    register: s2
+
+  - name: accept new ssh fingerprints
+    shell: ssh-keyscan -H {{ s2.instances[0].public_ip }} >> ~/.ssh/known_hosts
+
+  - name: add ec2 host
+    add_host:
+      name: "{{ s2.instances[0].public_ip }}"
+      groups: redis_slaves
+      ansible_ssh_user: ubuntu
+      ansible_ssh_private_key_file:  "{{ playbook_dir }}/{{ vault['aws_key_name']}}.pem"
+      host_key_checking: False
+      
+- hosts: redis_master
+  gather_facts: no
+  become: yes
+
+  tasks:
+  - import_tasks: redis_master_tasks.yaml
+
+- hosts: redis_slaves
+  gather_facts: no
+  become: yes
+
+  tasks:
+  - import_tasks: redis_slave_tasks.yaml    
+      
+      
+      
