@@ -20,7 +20,7 @@
 
 - name: add itrust job
   jenkins_job:
-    config: "{{ lookup('file', 'itrust.xml') }}"
+    config: "{{ lookup('file', 'templates/itrust.xml') }}"
     state: present
     name: itrust
     url: http://localhost:8080/

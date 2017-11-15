@@ -31,6 +31,7 @@
     retries: 5
     delay: 5
     changed_when: false
+    check_mode: no
   
   - import_tasks: copy_files.yaml
 

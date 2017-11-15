@@ -1,6 +1,6 @@
 # Run me first, to make sure things have python2
 ---
-- hosts: nodes
+- hosts: nomad_clients
   become: yes
   gather_facts: no
   tasks:
