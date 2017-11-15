@@ -3,9 +3,10 @@ Repo for CSC 519 - DevOps
 
 [Canary Screencast](https://youtu.be/WTktuxFEHDk)
 [Rolling Screencast](https://youtu.be/zt511jRmMhs)
+[Redis Feature Flag Screencast]()
 
 ## INFRASTRUCTURE UPGRADE 
-### REDIS FEATURE FLAG SERVER
+### REDIS FEATURE FLAG SERVER FOR CHECKBOX.IO
 
 ``` In this part we have created one redis-master and two redis-slaves to demonstrate. Two servers constantly get the changed key values from the master. 
 
@@ -15,7 +16,7 @@ When our "key1" is set to 1 - a picture will be displayed and when set to 0 - NU
 
 Slaves would not be able to SET keys, only a master can GET/SET both, but the 2 slaves would be getting values of key as they change via master.
 
-[Redis Feature Screencast]()
+
 
 
 ```
