@@ -7,6 +7,11 @@
   - name: Disable Firewall
     service: name=ufw state=stopped
 
+  - name: Get credentials
+    include_vars:
+      file: ../deployment/playbooks/vars/password.yml
+      name: vault
+
   - name: Install HTTPS Apt Packages
     apt: name={{ item }} update_cache=yes
     with_items:
