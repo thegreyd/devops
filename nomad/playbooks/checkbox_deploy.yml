@@ -39,8 +39,8 @@
   - name: add mongo user
     mongodb_user:
       database: admin
-      name: jenkins
-      password: 12345
+      name: "{{ vault['mongo_user'] }}"
+      password: "{{ vault['mongo_pass'] }}"
       roles: userAdminAnyDatabase
       state: present
     #when: first_run|changed

@@ -10,7 +10,7 @@
 
 - name: Copy inventory
   copy:
-    src: "{{ playbook_dir }}/inventory"
+    src: ../inventory
     dest: /var/lib/jenkins/inventory
 
 - name: Copy Checkbox deployment playbook
@@ -25,7 +25,7 @@
 
 - name: Copy ansible config
   copy:
-    src: "{{ playbook_dir }}/ansible.cfg"
+    src: ../ansible.cfg
     dest: /var/lib/jenkins/ansible.cfg
 
 - name: Create pem file

@@ -10,7 +10,6 @@
 - hosts: control
 
   vars:
-    inventory_file_name: ../inventory.vagrant
     harness_directory: "{{ ansible_env.HOME }}/harness"
 
   tasks:
@@ -53,14 +52,14 @@
       dest: playbooks/requirements.yml
     - src:  vars.yml
       dest: playbooks/vars.yml
-    - src:  "{{ inventory_file_name }}"
+    - src:  ../inventory
       dest: inventory
     - src:  ../ansible.cfg
       dest: ansible.cfg
     - src:  checkbox_deploy.yml
-      dest: playbooks/checkbox_deploy.yml 
-    - src: script.sh
-      dest: playbooks/script.sh 
+      dest: playbooks/checkbox_deploy.yml
+    - src:  "{{ ansible_env.HOME }}/.ssh/my_key.pem"
+      dest: "{{ ansible_env.HOME }}/.ssh/my_key.pem" 
 
   - name: Install Roles
     command: ansible-galaxy install -r {{ harness_directory }}/playbooks/requirements.yml
