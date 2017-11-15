@@ -7,6 +7,14 @@ Repo for CSC 519 - DevOps
 
 [Redis Feature Flag Screencast]()
 
+## Team
+- Zubin Thampi (zsthampi) 
+- Meghav Desai (mpdesai) 
+- Shishir Nagendra (sbnagend) 
+- Siddharth Sharma (ssharm24)
+- Kshitija Murudi (kmurudi) 
+
+
 
 ## INFRASTRUCTURE UPGRADE 
 ### REDIS FEATURE FLAG SERVER FOR CHECKBOX.IO
