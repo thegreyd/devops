@@ -24,9 +24,6 @@ Repo for CSC 519 - DevOps
     * jenkins: our build server for itrust and checkbox
     * itrust: deployment server for itrust
     * checkbox: deployment server for checkbox
-    * nomad1: nomad server running checkbox
-    * nomad2: nomad client running checkbox
-    * nomad3: nomad cleint running checkbox
 - `jenkins.yaml`
     + setup jenkins server
     + add checkbox and itrust jobs
@@ -72,7 +69,7 @@ Manual setup to add git hooks to build jobs.
     - create github enterprise api token with hooks and repo permissions
 - step 2: configure jenkins
     - In Add credentials, add (api tokens) as "secret text" credential type.
-    - In manage jenkins
+    - In manage jenkins > configure system
         - `https://api.github.com` add github server with credentials
         - `https://github.ncsu.edu/api/v3` add github enterprise server with credentials
         - leave the name blank
