@@ -17,7 +17,7 @@ The feature that we are demoing is a new route that we have created -> <host_ip>
 
 When our "key1" is set to 1 - a picture will be displayed and when set to 0 - NULL will be displayed.
 
-Slaves would not be able to SET keys, only a master can GET/SET both, but the 2 slaves would be getting values of key as they change via master.
+Slaves would not be able to SET keys, only a master can GET/SET both, but the 2 slaves would be getting values of key as they change via master, thus making possible the local mirroring from master to all other instances.
 
 Change has been made in the server.js for adding a route and this is done in our main checkbox.io repo itself. 
 
