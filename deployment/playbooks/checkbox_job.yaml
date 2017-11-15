@@ -1,0 +1,22 @@
+- name: add checkbox job
+  jenkins_job:
+    config: "{{ lookup('file', 'checkbox.xml') }}"
+    state: present
+    name: checkbox
+    url: http://localhost:8080/
+    user: "{{ vault['jenkins_user'] }}"
+    password: "{{ vault['jenkins_pass'] }}"
+  register: checkbox_job_add
+
+- name: trigger checkbox build
+  vars: 
+    start_build_script: |
+      import hudson.model.*
+      def job = hudson.model.Hudson.instance.getJob("$jobname")
+      hudson.model.Hudson.instance.queue.schedule(job, 0)
+  jenkins_script:
+    args: 
+      jobname: checkbox
+    script: "{{ start_build_script }}"
+    user: "{{ vault['jenkins_user'] }}"
+    password: "{{ vault['jenkins_pass'] }}"

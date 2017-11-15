@@ -1,0 +1,37 @@
+- name: Copy password.yml
+  copy:
+    src: "{{ playbook_dir }}/vars/password.yml"
+    dest: /var/lib/jenkins/password.yml
+
+- name: Copy password.txt
+  copy:
+    src: ~/password.txt
+    dest: /var/lib/jenkins/password.txt
+
+- name: Copy inventory
+  copy:
+    src: "{{ playbook_dir }}/inventory"
+    dest: /var/lib/jenkins/inventory
+
+- name: Copy Checkbox deployment playbook
+  copy:
+    src: "{{ playbook_dir }}/checkbox_deploy.yml"
+    dest: /var/lib/jenkins/checkbox_deploy.yml
+
+- name: Copy iTrust deployment playbook
+  copy:
+    src: "{{ playbook_dir }}/itrust_deploy.yml"
+    dest: /var/lib/jenkins/itrust_deploy.yml
+
+- name: Copy ansible config
+  copy:
+    src: "{{ playbook_dir }}/ansible.cfg"
+    dest: /var/lib/jenkins/ansible.cfg
+
+- name: Create pem file
+  copy:
+    content: "{{ vault['aws_key2']}}"
+    dest: "/var/lib/jenkins/{{ vault['aws_key_name']}}.pem"
+    force: yes
+    mode: 0400
+  become_user: jenkins

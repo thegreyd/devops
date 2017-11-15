@@ -1,0 +1,39 @@
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+
+  - name: Get credentials from vault
+    include_vars:
+      file: password.yml
+      name: vault
+
+  - name: Create pem file
+    copy:
+      content: "{{ vault['aws_key']}}"
+      dest: "{{ playbook_dir }}/{{ vault['aws_key_name']}}.pem"
+      force: yes
+      mode: 0400
+
+  - name: Install pip dependency
+    pip:
+      name: boto
+      state: present
+
+  - name: Create a new EC2 host
+    ec2:
+      aws_access_key: "{{ vault['aws_access_key'] }}"
+      aws_secret_key: "{{ vault['aws_secret_key'] }}"
+      key_name: "{{ vault['aws_key_name'] }}"
+      instance_type: t2.micro
+      image: ami-6e1a0117
+      wait: yes
+      group: webservers
+      region: us-west-2
+      vpc_subnet_id: subnet-162e6571
+      count: 1
+      assign_public_ip: yes
+    register: ec2
+
+  - debug:
+      var: ec2.instances[0].public_ip

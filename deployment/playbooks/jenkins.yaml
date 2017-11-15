@@ -1,0 +1,39 @@
+---
+- hosts: jenkins
+  gather_facts: no
+  become: yes
+  
+  pre_tasks:
+  
+  - name: 'Install python2'
+    raw: sudo apt -y update && sudo apt -y install python-simplejson
+
+  tasks:
+
+  - name: Get credentials
+    include_vars:
+      file: password.yml
+      name: vault
+
+  - name: Update packages
+    apt:
+      update_cache: yes
+      upgrade: dist
+
+  - import_tasks: install_dependencies.yaml
+  
+  - import_tasks: configure_jenkins.yaml
+
+  - name: Wait for Jenkins
+    shell: "curl -D - --silent --max-time 5 http://localhost:8080/cli/"
+    register: result
+    until: (result.stdout.find("403 Forbidden") != -1) or (result.stdout.find("200 OK") != -1) and (result.stdout.find("Please wait while") == -1)
+    retries: 5
+    delay: 5
+    changed_when: false
+  
+  - import_tasks: copy_files.yaml
+
+  - import_tasks: checkbox_job.yaml
+  
+  - import_tasks: itrust_job.yaml
