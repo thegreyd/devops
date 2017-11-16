@@ -138,5 +138,5 @@ The ansible scripts do the following
 3. Script to provision iTrust on production servers
 4. Script to redeploy iTrust on a git push
 
-Microsoft azure is used for deploying production servers. Sql database of instance one is shared by all the 5 iTrust instances.
+The XML files for the jobs are provided as itrust_initial.xml and itrust_rolling.xml files. Microsoft azure is used for deploying production servers. Sql database is initialised on instance one. This database is shared by all the 5 iTrust instances. Modifications are made in the context.xml files
 '''
