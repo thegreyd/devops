@@ -1,0 +1,132 @@
+# - name: "Get ssh key"
+#   digital_ocean_sshkey:
+#     state: present
+#     oauth_token: "{{ vault['api_token'] }}"
+#     name: "mac"
+#     ssh_pub_key: "{{ vault['ssh_pub_key'] }}"
+#   register: result
+
+# - name: debug
+#   debug:
+#     msg: "{{ result }} "
+
+- name: get passwords
+  include_vars:
+    file: password.yml
+    name: vault
+
+- name: Create Droplet 
+  digital_ocean:
+    state: present
+    command: droplet
+    name: droplet1
+    api_token: "{{ vault['api_token'] }}"
+    size_id: 512mb
+    region_id: NYC1
+    image_id: ubuntu-16-04-x64
+    ssh_key_ids: 15414614
+    # ssh_pub_key: "{{ vault['ssh_pub_key'] }}"
+    wait: yes
+  register: droplet1
+
+- name: debug
+  debug:
+    msg: "{{ droplet1.droplet.ip_address }}"
+
+- name: Wait for droplet instance to bootup
+  wait_for: 
+    host: "{{ droplet1.droplet.ip_address }}"
+    port: 22 
+    delay: 60 
+    timeout: 320 
+    state: started
+
+- name: add ec2 host
+  add_host:
+    name: "{{ droplet1.droplet.ip_address }}"
+    groups: nomad_master
+    ansible_ssh_user: root
+    ansible_ssh_private_key_file: ~/.ssh/droplet.pem
+    ansible_python_interpreter: /usr/bin/python3
+    host_key_checking: False
+
+- name: accept new ssh fingerprints                                         
+  shell: ssh-keyscan -H {{ droplet1.droplet.ip_address }} >> ~/.ssh/known_hosts
+
+
+# - name: Create Droplet 
+#   digital_ocean:
+#     state: present
+#     command: droplet
+#     name: droplet2
+#     api_token: "{{ vault['api_token'] }}"
+#     size_id: 512mb
+#     region_id: NYC1
+#     image_id: ubuntu-16-04-x64
+#     ssh_key_ids: 15414614
+#     # ssh_pub_key: "{{ vault['ssh_pub_key'] }}"
+#     wait: yes
+#   register: droplet2
+
+# - name: debug
+#   debug:
+#     msg: "{{ droplet2.droplet.ip_address }} "
+
+# - name: Wait for droplet instance to bootup
+#   wait_for: 
+#     host: "{{ droplet2.droplet.ip_address }} "
+#     port: 22 
+#     delay: 60 
+#     timeout: 320 
+#     state: started
+
+# - name: add ec2 host
+#   add_host:
+#     name: "{{ droplet2.droplet.ip_address }} "
+#     groups: nomad_slave
+#     ansible_ssh_user: root
+#     ansible_ssh_private_key_file: ~/.ssh/droplet.pem
+#     ansible_python_interpreter: /usr/bin/python3
+#     host_key_checking: False
+
+# - name: accept new ssh fingerprints                                         
+#   shell: ssh-keyscan -H {{ droplet2.droplet.ip_address }} >> ~/.ssh/known_hosts
+
+
+# - name: Create Droplet 
+#   digital_ocean:
+#     state: present
+#     command: droplet
+#     name: droplet3
+#     api_token: "{{ vault['api_token'] }}"
+#     size_id: 512mb
+#     region_id: NYC1
+#     image_id: ubuntu-16-04-x64
+#     ssh_key_ids: 15414614
+#     # ssh_pub_key: "{{ vault['ssh_pub_key'] }}"
+#     wait: yes
+#   register: droplet3
+
+# - name: debug
+#   debug:
+#     msg: "{{ droplet3.droplet.ip_address }} "
+
+# - name: Wait for droplet instance to bootup
+#   wait_for: 
+#     host: "{{ droplet3.droplet.ip_address }} "
+#     port: 22 
+#     delay: 60 
+#     timeout: 320 
+#     state: started
+
+# - name: add ec2 host
+#   add_host:
+#     name: "{{ droplet3.droplet.ip_address }} "
+#     groups: nomad_slave
+#     ansible_ssh_user: root
+#     ansible_ssh_private_key_file: ~/.ssh/droplet.pem
+#     ansible_python_interpreter: /usr/bin/python3
+#     host_key_checking: False
+
+# - name: accept new ssh fingerprints                                         
+#   shell: ssh-keyscan -H {{ droplet3.droplet.ip_address }} >> ~/.ssh/known_hosts

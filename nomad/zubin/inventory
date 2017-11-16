@@ -1,0 +1,2 @@
+[nomad_master]
+67.205.142.244 ansible_ssh_user=root ansible_ssh_private_key_file=~/.ssh/droplet.pem ansible_python_interpreter=/usr/bin/python host_key_checking=False
