@@ -5,7 +5,7 @@ Repo for CSC 519 - DevOps
 
 ## Screencasts
 - [Deployment Pipeline](https://youtu.be/kcN8ciJH8ds)
-- Nomad
+- [Nomad](https://youtu.be/-7ImzzrK7_4)
 - [Redis Feature Flag](https://youtu.be/g3hLF5k6qgA)
 - [Canary](https://youtu.be/WTktuxFEHDk)
 - [Rolling](https://youtu.be/zt511jRmMhs)
@@ -78,6 +78,16 @@ Manual setup to add git hooks to build jobs.
 
 
 ## INFRASTRUCTURE UPGRADE 
+
+### NOMAD CLUSTER
+
+```In this part of the deployment, we create three nodes (Vagrant VMs) that will form out nomad cluster. This is done to ensure high availability, which means that when one active client goes down, the other can seamlessly take over, thereby requiring no manual effort to handle failovers. 
+Thus, as part of the demo, we have a nomad cluster with one server and two clients. When we run the job, it gets allocated to one of the clients. The job in our case is checkbox.io and we demonstrate that it is up and running when we contact the server. Next we manually bring down this node on to which the job was allocated. However, the job gets automatically re-allocated to the other node and there is no downtime in service. 
+These tasks are achieved by three playbooks ( bootstrap-cluster.yml - to install Python on all three nodes, install-nomad.yml - to install nomad on all three nodes and assign roles, and finally checkbox_deploy.yml - to set up checkbox and its dependencies.)
+Finally the job itself is specified in a file called service.nomad.
+
+```
+
 ### REDIS FEATURE FLAG SERVER FOR CHECKBOX.IO
 
 ``` In this part we have created one redis-master and two redis-slaves to demonstrate. Two servers constantly get the changed key values from the master.
