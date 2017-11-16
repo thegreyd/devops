@@ -130,7 +130,7 @@ Internally, I use a redis server to store the alert flag.
 ```
 ## Rolling Update
 ```
-All the ansible scripts and code for Canary release are contained in the Rolling folder.
+All the ansible scripts and code for Rolling release are contained in the Rolling folder.
 The ansible scripts do the following
 
 1. Configure and install jenkins
