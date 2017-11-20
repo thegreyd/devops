@@ -1,6 +1,8 @@
 # csc_519_devops
 Repo for CSC 519 - DevOps
 
+### [Screencast](https://youtu.be/mKFDtyoc910)
+
 #### Install python libraries 
 sudo pip install -r requirements.txt
 
