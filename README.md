@@ -38,8 +38,9 @@ python twitter_consumer.py
 
 ## Report 
 We followed the following work division for the tech talk. 
-Demo - Zubin Thampi, Meghav Desai 
-Presentation (Kafka Details, Pros and Cons, Alternatives, Design Aspects etc) - Kshitija Murudi, Shishir Nagendra, Siddharth Sharma 
+
+- Demo - Zubin Thampi, Meghav Desai 
+- Presentation (Kafka Details, Pros and Cons, Alternatives, Design Aspects etc) - Kshitija Murudi, Shishir Nagendra, Siddharth Sharma 
 
 Apache Kafka is a tool used for data streaming, and similar applications. 
 It has gained immense importance in the industry recently, with organizations like LinkedIn using it for their data streaming requirements exclusively. 
