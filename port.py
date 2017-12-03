@@ -3,28 +3,29 @@ import os
 import sys
 
 
-cmd = "netstat -tuwanp4 | awk '{print $4}' | grep ':' | cut -d ':' -f 2 | uniq"
+port = "netstat -tuwanp4 | awk '{print $4}' | grep ':' | cut -d ':' -f 2"
 #output = subprocess.check_output( '{} | tee /dev/stderr'.format( cmd ), shell = True)
-output = subprocess.check_output(cmd , shell = True)
-output = output.split('\n')
-for o in range(len(output)):
-#	print o 
-	try:
-		int(output[o])
-	except:
-#		print "Removing tnis"
-		output.pop(o)
+port_out = subprocess.check_output(port , shell = True)
+port_out = port_out.split('\n')
+for o in range(len(port_out)):
+#       print o
+        try:
+                int(port_out[o])
+        except:
+#               print "Removing tnis"
+                port_out.pop(o)
 
-print output
+pro = "netstat -tuwanp4 | awk '{print $7}' | grep / | cut -d '/' -f 2"
+pro_out = subprocess.check_output(pro , shell = True)
+pro_out = pro_out.split('\n')
 
-for i in output:
-	#i = map(int , i)
-#	print i , type(i)
-	if int(i) <= 1023:
-		print i, "\t Well known port "
+print len(port_out), len (pro_out)
 
-	elif int(i) <= 49151 :
-		 print i, "\t Registered port"
-	
-	else :
-		 print i, "\t Dynmiac port | CLOSE THIS PORT"
+for i in range (min(len (port_out) , len(pro_out))):
+        #i = map(int , i)
+#       print i , type(i)
+        print port_out[i], "\t" , pro_out[i]
+
+if len(port_out) > len (pro_out):
+        for i in range (len(port_out) - len (pro_out) , len (port_out)):
+                print port_out[i] , "\t", "---"
