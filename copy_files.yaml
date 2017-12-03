@@ -1,0 +1,25 @@
+---
+- hosts: aws
+  gather_facts: no
+  tasks:
+    - name: copy main.js
+      copy:
+        src: dashboard/main.js
+        dest: /home/ubuntu/csc_519_devops/dashboard/main.js
+
+    - name: copy usage.js
+      copy:
+        src: dashboard/js/usage.js
+        dest: /home/ubuntu/csc_519_devops/dashboard/js/usage.js
+
+    - name: copy dependency.html
+      copy:
+        src: dashboard/pages/dependency.html
+        dest: /home/ubuntu/csc_519_devops/dashboard/pages/dependency.html
+
+    - name: copy usage.html
+      copy:
+        src: dashboard/pages/usage.html
+        dest: /home/ubuntu/csc_519_devops/dashboard/pages/usage.html
+
+    
