@@ -36,7 +36,7 @@ app.get('/dependency', function(req, res){
 app.get('/usage', function(req, res){
 	var getData = function(db, callback) {
 		var collection = db.collection('ping');
-		collection.find({}, {timestamp:1, cpu:1, memory:1, disk:1}).sort({_id:1}).limit(200).toArray(function(err, result) {
+		collection.find({}, {timestamp:1, cpu:1, memory:1, disk:1}).sort({_id:1}).limit(100).toArray(function(err, result) {
 			callback(result);
 		});
 	}
