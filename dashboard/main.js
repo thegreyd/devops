@@ -36,7 +36,7 @@ app.get('/dependency', function(req, res){
 app.get('/usage', function(req, res){
 	var getData = function(db, callback) {
 		var collection = db.collection('ping');
-		collection.find({}, {timestamp:1, cpu:1, memory:1, disk:1}).sort({_id:1}).limit(50).toArray(function(err, result) {
+		collection.find({}, {timestamp:1, cpu:1, memory:1, disk:1}).sort({_id:1}).limit(200).toArray(function(err, result) {
 			callback(result);
 		});
 	}
@@ -59,7 +59,9 @@ app.get('/flame', function(req, res) {
 		console.log(data[data.length-1])
 		options = ""
 		data.forEach(function(row){
-			options+="<option>"+row+"</option>"
+			if (row.length>0){
+				options+="<option>"+row+"</option>"
+			}
 		})
 		res.render('flame', {message: options})
 	});
