@@ -6,64 +6,64 @@ Repo for CSC 519 - DevOps
 
 We are integrating our special milestone work with the Checkbox server that we deployed on this CI/CD pipeline project.
 
-We built a dashboard which displays the following views to the user :-
+We built a dashboard which displays the following views to the user :
 
 ## Dependency Checker
 
 ![](./dep.png)
 
-Most of the build failures happen due to failure of dependency checks. Thus, we thought it is an important parameter to consider and user can know when dependency checks fail, and rectify code to prevent build failure.
+Dependencies are important as they increase the attack surface of your application. Any security vulnerability in 3rd party npm module, can severely affect your application. Therefore it is important to update your dependencies to the latest version. We show the severity of updates [major, minor, bugfix], to let you make the decision.
 
 ## Usage Statistics 
 
 ![](./usage.png)
 
-This will monitor CPU/Memory usage and plot a graph
+This will monitor CPU/Memory/Disk usage and plot a graph, to easily show spikes or unusual trends.
 
 ## Network Stats 
 
 ![](./port.png)
 
-This functionality does port scanning on the server that is hosting the application. It displays the ports that are currently open and also the processes that are using them. 
-  - It helps the user know which all ports are in use. This could help a developer to monitor the ports and enhance security by closing unwanted ports and processes.
+This functionality does port scanning on the server that is hosting the application. It displays the ports that are currently open and also the processes/services that are using them. 
+
+This helps the development team to monitor the services and ports and enhance security by closing unwanted ports and processes.
 
 ## Flame Graph 
 
 ![](./flame.png)
 
-- Flame graphs are system profile visualisation software.
+- Flame graphs are system profile visualization software.
 - Flame graphs internally use kernel tools such as perf. 
-- Flame graphs can accurately provide CPU profiling as compared to other profilin methods such as java profilers becasue they also capture system calls and kernel stacks
-- We have demostrated a flame graph to display the CPU statistics of the server that hosts checkbox.io
-- The gathering are displayed on the server dashboard letting the user collect data about system performance.
-- We have added flame graph to our UI which will help in . 
+- Flame graphs can accurately provide CPU profiling as compared to other profiling methods such as java profilers because they also capture system calls and kernel stacks
+- We have a flame graph to display the CPU statistics of the server that hosts checkbox.io
 
-## Implementation - Flame Graph
+## Implementation Details
+
+### Flame Graph
 
 ![](./flameoption.png)
 
-1. We have used the flame graph repository and linux perf tool to generate flame graphs.
-2. We are using perf record and perf script to collect CPU data
-3. To automate the process we have used a shell script to collect CPU data 
-4. While the flame graph is collecting data we are hitting API's of checkbox.io using anothe script.
-5. We record how the system performance is effected when we continuously hit the API of the application
-
-## Implementation - Monitoring Dashboard 
+- We have used the flame graph repository and linux perf tool to generate flame graphs.
+- We are using perf record and perf script to collect CPU data
+- To automate the process we have used a shell script to collect CPU data 
+- While the flame graph is collecting data we are hitting API's of checkbox.io using anothe script.
+- We record how the system performance is effected when we continuously hit the API of the application
 
 ### Dependency Checker
 
-To implement this function we are using the 'npm-check' npm module and using a Node.js script to implement this function - [check.js](https://github.ncsu.edu/zsthampi/csc_519_devops/blob/milestone4/check.js).
+To implement this function we are using the 'npm-check' npm module. Using the this module, we exposed an endpoint that returns dependencies information.http://host:3000/pingdependency where we get all the required parameters in json format.
 
-It checks if all the modules/packages needed (dependencies) have been installed and latest or not.
-We are using the earlier mentioned script and the UI uses that to display details of dependency checking.
+It detects these about the dependencies:
+- unused dependencies
+- any version updates on npm
+- included in package.json or not
 
 ### Usage Statistics
 
 To implement this feature we have used the 'express-ping' npm module. Using the 'express-ping' module, we can expose a simple API (route) to see health status of our application, so we are creating a route to display the parameters. We have integrated our code for this in the server.js of Checkbox server-side code and this provides us with an end-point - http://host:3000/ping where we get all the required parameters. 
 Only main addition required was - 
-```
-app.use(health.ping());
-``` 
+
+`app.use(health.ping());`
 
 Now, we did not need all the parameters and information, so we extracted the important ones and plot a graph to be displayed on our UI portal.
 
