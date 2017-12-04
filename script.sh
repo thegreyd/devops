@@ -7,7 +7,7 @@ while [ $i -lt 1 ]
 do
 
 cd /home/ubuntu/FlameGraph/
-perf record -F 99 -a -g -- sleep 60
+perf record -F 99 -a -g -- sleep 90
 perf script | ./stackcollapse-perf.pl > out.perf-folded
 ./flamegraph.pl out.perf-folded > perf-kernel.svg
 mv perf-kernel.svg  /home/ubuntu/svg_files/perf-kernel.svg_$(date +%F-%T)
@@ -23,7 +23,7 @@ mv nonidle.svg  /home/ubuntu/svg_files/nonidle_$(date +%F-%T)
 #mv ext4internals.svg  /home/ubuntu/svg_files/ext4internals_$(date +%F-%T)
 #mv rw.svg  /home/ubuntu/svg_files/rw_$(date +%F-%T)
 
-sleep 300
+sleep 150
 done
 ~
 ~
