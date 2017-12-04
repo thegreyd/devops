@@ -59,7 +59,9 @@ app.get('/flame', function(req, res) {
 		console.log(data[data.length-1])
 		options = ""
 		data.forEach(function(row){
-			options+="<option>"+row+"</option>"
+			if (row.length>0){
+				options+="<option>"+row+"</option>"
+			}
 		})
 		res.render('flame', {message: options})
 	});
