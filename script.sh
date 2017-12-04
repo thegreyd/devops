@@ -3,7 +3,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/ubuntu/
 
 i="0"
 
-while [ $i -lt 4 ]
+while [ $i -lt 1 ]
 do
 
 cd /home/ubuntu/FlameGraph/
@@ -23,6 +23,7 @@ mv nonidle.svg  /home/ubuntu/svg_files/nonidle_$(date +%F-%T)
 #mv ext4internals.svg  /home/ubuntu/svg_files/ext4internals_$(date +%F-%T)
 #mv rw.svg  /home/ubuntu/svg_files/rw_$(date +%F-%T)
 
+sleep 300
 done
 ~
 ~
