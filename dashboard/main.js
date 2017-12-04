@@ -68,10 +68,11 @@ app.get('/flame', function(req, res) {
 });
 
 app.get('/network', function(req, res) {
-	var spawn = require("child_process").spawn;
-	var process = spawn('python2',["/home/ubuntu/csc_519_devops/port.py"])
-	process.stdout.on("data", function(data){
-		data = String(data).split('\n')
+	//var spawn = require("child_process").spawn;
+	//var process = spawn('python2',["/home/ubuntu/csc_519_devops/port.py"])
+	const {exec} = require("child_process")
+	exec("sudo python2 /home/ubuntu/csc_519_devops/port.py", (err, stdout, stderr) => {
+		data = String(stdout).split('\n')
 		content = ""
 		data.forEach(function(row){
 			row = row.split('\t')
@@ -85,11 +86,13 @@ app.get('/network', function(req, res) {
 		})
 		res.render('network', {message: content})
 	})
-
 });
 
 app.get('/', function(req, res) {
-	res.sendfile('index.html');
+	res.redirect('/usage');
 });
 
+app.get('/about', function(req, res) {
+	res.sendfile('pages/about.html');
+});
 app.listen(3000);
