@@ -15,7 +15,8 @@ The idea of our special milestone is to build a UI portal which displays/consist
   - This will monitor CPU/Memory usage and plot a graph
 
 + Network Stats 
-  - This functionality does port scanning and lets the user know which all ports are in use. This could help a developer/implementor to decide which ports to not use for adding extra functions.
+  - This functionality does port scanning on the server that is hosting the application. It displays the ports that are currently open and also the processes that are using them. 
+  - It helps the user know which all ports are in use. This could help a developer to monitor the ports and enhance security by closing unwanted ports and processes.
 
 + Flame Graph 
   - Flame graphs are system profile visualisation software.
@@ -28,8 +29,9 @@ The idea of our special milestone is to build a UI portal which displays/consist
 ## Implementation - Flame Graph
 1. We have used the flame graph repository and linux perf tool to generate flame graphs.
 2. We are using perf record and perf script to collect CPU data
-3. To automate the process we have used a shell script to collect CPU data and a linux cron job to trigger the script
-4. While the flame graph is collecting data we are hitting API's of checkbox.io using anothe shell script.
+3. To automate the process we have used a shell script to collect CPU data 
+4. While the flame graph is collecting data we are hitting API's of checkbox.io using anothe script.
+5. We record how the system performance is effected when we continuously hit the API of the application
 
 ## Implementation - Monitoring Dashboard 
 
