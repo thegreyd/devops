@@ -18,11 +18,18 @@ The idea of our special milestone is to build a UI portal which displays/consist
   - This functionality does port scanning and lets the user know which all ports are in use. This could help a developer/implementor to decide which ports to not use for adding extra functions.
 
 + Flame Graph 
-  - We have added flame graph to our UI which will help in letting the developer/user to know about the stack usage. 
-  //(meghav add more here and in the next implementation section)
+  - Flame graphs are system profile visualisation software.
+  - Flame graphs internally use kernel tools such as perf. 
+  - Flame graphs can accurately provide CPU profiling as compared to other profilin methods such as java profilers becasue they also capture system calls and kernel stacks
+  - We have demostrated a flame graph to display the CPU statistics of the server that hosts checkbox.io
+  - The gathering are displayed on the server dashboard letting the user collect data about system performance.
+  - We have added flame graph to our UI which will help in . 
 
 ## Implementation - Flame Graph
-
+1. We have used the flame graph repository and linux perf tool to generate flame graphs.
+2. We are using perf record and perf script to collect CPU data
+3. To automate the process we have used a shell script to collect CPU data and a linux cron job to trigger the script
+4. While the flame graph is collecting data we are hitting API's of checkbox.io using anothe shell script.
 
 ## Implementation - Monitoring Dashboard 
 
