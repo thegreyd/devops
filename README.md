@@ -44,7 +44,12 @@ Steps to run the dependency checker separately -
 
 ### Usage Statistics
 
-To implement this feature we have used the 'express-king' npm module. We have integrated our code for this in the server.js of Checkbox server-side code and this provides us with an end-point - http://host:3000/ping where we get all the required parameters.
+To implement this feature we have used the 'express-ping' npm module. Using the 'express-ping' module, we can expose a simple API (route) to see health status of our application, so we are creating a route to display the parameters. We have integrated our code for this in the server.js of Checkbox server-side code and this provides us with an end-point - http://host:3000/ping where we get all the required parameters. 
+Only main addition required was - 
+```
+app.use(health.ping());
+``` 
+
 Now, we did not need all the parameters and information, so we extracted the important ones and plot a graph to be displayed on our UI portal.
 
 For usage statistics we have plotted garphs of CPU usage and Memory usage against time. 
