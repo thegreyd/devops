@@ -6,27 +6,42 @@ Repo for CSC 519 - DevOps
 
 We are integrating our special milestone work with the Checkbox server that we deployed on this CI/CD pipeline project.
 
-The idea of our special milestone is to build a UI portal which displays/consists the following to the user :-
+We built a dashboard which displays the following views to the user :-
 
-+ Dependency Checker (Health check)
-  - Most of the build failures happen due to failure of dependency checks. Thus, we thought it is an important parameter to consider and user can know when dependency checks fail, and rectify code to prevent build failure.
+## Dependency Checker
 
-+ Usage Statistic (Graph) 
-  - This will monitor CPU/Memory usage and plot a graph
+![](./dep.png)
 
-+ Network Stats 
-  - This functionality does port scanning on the server that is hosting the application. It displays the ports that are currently open and also the processes that are using them. 
+Most of the build failures happen due to failure of dependency checks. Thus, we thought it is an important parameter to consider and user can know when dependency checks fail, and rectify code to prevent build failure.
+
+## Usage Statistics 
+
+![](./usage.png)
+
+This will monitor CPU/Memory usage and plot a graph
+
+## Network Stats 
+
+![](./port.png)
+
+This functionality does port scanning on the server that is hosting the application. It displays the ports that are currently open and also the processes that are using them. 
   - It helps the user know which all ports are in use. This could help a developer to monitor the ports and enhance security by closing unwanted ports and processes.
 
-+ Flame Graph 
-  - Flame graphs are system profile visualisation software.
-  - Flame graphs internally use kernel tools such as perf. 
-  - Flame graphs can accurately provide CPU profiling as compared to other profilin methods such as java profilers becasue they also capture system calls and kernel stacks
-  - We have demostrated a flame graph to display the CPU statistics of the server that hosts checkbox.io
-  - The gathering are displayed on the server dashboard letting the user collect data about system performance.
-  - We have added flame graph to our UI which will help in . 
+## Flame Graph 
+
+![](./flame.png)
+
+- Flame graphs are system profile visualisation software.
+- Flame graphs internally use kernel tools such as perf. 
+- Flame graphs can accurately provide CPU profiling as compared to other profilin methods such as java profilers becasue they also capture system calls and kernel stacks
+- We have demostrated a flame graph to display the CPU statistics of the server that hosts checkbox.io
+- The gathering are displayed on the server dashboard letting the user collect data about system performance.
+- We have added flame graph to our UI which will help in . 
 
 ## Implementation - Flame Graph
+
+![](./flameoption.png)
+
 1. We have used the flame graph repository and linux perf tool to generate flame graphs.
 2. We are using perf record and perf script to collect CPU data
 3. To automate the process we have used a shell script to collect CPU data 
@@ -41,15 +56,6 @@ To implement this function we are using the 'npm-check' npm module and using a N
 
 It checks if all the modules/packages needed (dependencies) have been installed and latest or not.
 We are using the earlier mentioned script and the UI uses that to display details of dependency checking.
-
-Steps to run the dependency checker separately -
-- `git clone git@github.com:thegreyd/checkbox.io.git`
-- `cd checkbox.io/server-side/site`
-- `npm install`
-- `node check.js`
-
-![check.js output](./screen2.png)
-![npm-check output](./screen1.png)
 
 ### Usage Statistics
 
