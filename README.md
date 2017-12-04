@@ -2,9 +2,9 @@ csc_519_devops
 Repo for CSC 519 - DevOps
 
 # Special Milestone
+[Screencast](https://youtu.be/o3Cof-OY8tY)
+
 We are integrating our special milestone work with the Checkbox server that we deployed on this CI/CD pipeline project.
-Steps to access the portal hosted on Checkbox server (ec2 IP) ->
-[Portal Link]()
 
 The idea of our special milestone is to build a UI portal which displays/consists the following to the user :-
 
