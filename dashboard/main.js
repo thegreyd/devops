@@ -3,6 +3,7 @@ var app = express();
 var path = require('path');
 var request = require('request')
 var mustacheExpress = require('mustache-express');
+var fs = require('fs')
 
 app.use('/data', express.static(path.join(__dirname, 'data')));
 app.use('/dist', express.static(path.join(__dirname, 'dist')));
@@ -51,6 +52,41 @@ app.get('/usage', function(req, res){
 		});
 	});
 })
+
+app.get('/flame', function(req, res) {
+	fs.readFile('./data/timestamps.txt', 'utf8', function(err, data){
+		data = data.split('\n')
+		console.log(data[data.length-1])
+		options = ""
+		data.forEach(function(row){
+			options+="<option>"+row+"</option>"
+		})
+		res.render('flame', {message: options})
+	});
+	
+	
+});
+
+app.get('/network', function(req, res) {
+	var spawn = require("child_process").spawn;
+	var process = spawn('python2',["/home/ubuntu/csc_519_devops/port.py"])
+	process.stdout.on("data", function(data){
+		data = String(data).split('\n')
+		content = ""
+		data.forEach(function(row){
+			row = row.split('\t')
+			if (row[0].length > 0) {
+				content += "<tr>"+
+						"<td>"+row[0]+"</td>"+
+						"<td>"+row[1]+"</td>"+
+						"</tr>"	
+			}
+			
+		})
+		res.render('network', {message: content})
+	})
+
+});
 
 app.get('/', function(req, res) {
 	res.sendfile('index.html');

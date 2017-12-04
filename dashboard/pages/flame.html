@@ -320,7 +320,10 @@
                             <div class="row">
                                 <div class="col-lg-5">
                                     <form role="form">
-                                        <label> TimeStamp : <input id="from" class="form-control"> </label>
+                                        <label> TimeStamp </label> 
+                                        <select id="from" class="form-control"> 
+                                            {{{message}}}
+                                        </select>
                                         <button type="submit" class="btn btn-default">Submit</button>
                                     </form>
                                 </div>
@@ -330,20 +333,7 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-lg-8">
-                    <div class="panel-heading">
-                        EXT4 INTERNALS
-                    </div>
-
-                    <!-- /.panel-heading -->
-                    <div class="panel-body">
-                        <div id="flame-graph">
-                            <img src="../data/ext4internals.svg">
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
 
             <div class="row">
                 <div class="col-lg-8">
@@ -354,7 +344,7 @@
                     <!-- /.panel-heading -->
                     <div class="panel-body">
                         <div id="flame-graph">
-                            <img src="../data/perf-kernel.svg">
+                            <img id = "perf" src="">
                         </div>
                     </div>
                 </div>
@@ -369,7 +359,7 @@
                     <!-- /.panel-heading -->
                     <div class="panel-body">
                         <div id="flame-graph">
-                            <img src="../data/nonidle.svg">
+                            <img id = "idle" src="">
                         </div>
                     </div>
                 </div>
@@ -393,6 +383,7 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
+    <script src="../js/flame.js"></script>
 
 </body>
 

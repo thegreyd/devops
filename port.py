@@ -15,16 +15,19 @@ for o in range(len(output)):
 #		print "Removing tnis"
 		output.pop(o)
 
-print output
+known = []
 
 for i in output:
 	#i = map(int , i)
 #	print i , type(i)
-	if int(i) <= 1023:
-		print i, "\t Well known port "
-
-	elif int(i) <= 49151 :
-		 print i, "\t Registered port"
 	
-	else :
-		 print i, "\t Dynmiac port | CLOSE THIS PORT"
+	if i not in known:
+		if int(i) <= 1023:
+			print i, "\t Well known port "
+
+		elif int(i) <= 49151 :
+			 print i, "\t Registered port"
+		
+		else :
+			 print i, "\t Dynamic port | CLOSE THIS PORT"
+	known.append(i)

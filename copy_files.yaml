@@ -7,19 +7,39 @@
         src: dashboard/main.js
         dest: /home/ubuntu/csc_519_devops/dashboard/main.js
 
-    - name: copy usage.js
+    - name: copy js/flame.js
       copy:
-        src: dashboard/js/usage.js
-        dest: /home/ubuntu/csc_519_devops/dashboard/js/usage.js
+        src: dashboard/js/flame.js
+        dest: /home/ubuntu/csc_519_devops/dashboard/js/flame.js
 
-    - name: copy dependency.html
+    - name: copy network
       copy:
-        src: dashboard/pages/dependency.html
-        dest: /home/ubuntu/csc_519_devops/dashboard/pages/dependency.html
+        src: dashboard/pages/network.html
+        dest: /home/ubuntu/csc_519_devops/dashboard/pages/network.html
 
-    - name: copy usage.html
+    - name: copy network
       copy:
-        src: dashboard/pages/usage.html
-        dest: /home/ubuntu/csc_519_devops/dashboard/pages/usage.html
+        src: port.py
+        dest: /home/ubuntu/csc_519_devops/port.py
+
+    # - name: copy usage.js
+    #   copy:
+    #     src: dashboard/js/usage.js
+    #     dest: /home/ubuntu/csc_519_devops/dashboard/js/usage.js
+
+    # - name: copy dependency.html
+    #   copy:
+    #     src: dashboard/pages/dependency.html
+    #     dest: /home/ubuntu/csc_519_devops/dashboard/pages/dependency.html
+
+    # - name: copy usage.html
+    #   copy:
+    #     src: dashboard/pages/usage.html
+    #     dest: /home/ubuntu/csc_519_devops/dashboard/pages/usage.html
+
+    - name: copy flame.html
+      copy:
+        src: dashboard/pages/flame.html
+        dest: /home/ubuntu/csc_519_devops/dashboard/pages/flame.html
 
     
