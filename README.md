@@ -52,7 +52,3 @@ For usage statistics we have plotted garphs of CPU usage and Memory usage agains
 ### Network Statistics - Port Scanning
 
 We have used a python script - [port.py](https://github.ncsu.edu/zsthampi/csc_519_devops/blob/milestone4/port.py) to implement this functionality. The script lists down all the open/listening ports and lists down the processes using them. This is helpful when we have to choose a port for another application/process. This is also integrated with back-end UI code and our UI displays this. 
-
-### Flame Graph
-
-Implementation description --
